@@ -1,0 +1,11 @@
+To compile
+
+$ mpicc mm_mpi.c -o mm_mpi
+
+To run
+
+$ qsub -lnodes=10:ppn=2 -d . -N mm -e output -o output run_mm_mpi.sh
+
+To check the jobs:
+
+$ qstats
