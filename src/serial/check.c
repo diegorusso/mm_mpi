@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-int check_serial( int m, int l, int n, double c[][n] )
+int check( int m, int l, int n, double c[][n] )
 // ---------------------------------------------------------------------
 // --- Routine 'check' does the correctness check for the matrix-matrix
 //     multiplication in function 'mxm'. Because of the particular

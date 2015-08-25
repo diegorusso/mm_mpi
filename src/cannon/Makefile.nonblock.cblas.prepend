@@ -1,0 +1,23 @@
+include ../../Makefile.mm.inc
+
+VPATH = ../shared
+
+OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm-nonblock.o \
+          state.o
+
+EXEC    = x.mm
+
+${EXEC}: ${OBJECTS}
+	@echo
+	${LD_MPI} ${LDFLAGS} ${OBJECTS} ${LIBS} -o ${EXEC}
+
+.SUFFIXES:  .c .o
+.c.o    :
+	@echo
+	${CC_MPI} ${CFLAGS} -D__CBLAS -D__PREPOSTED_NONBLOCKING ${INCS} -c -o $@ $<
+
+clean   :
+	/bin/rm -f ${OBJECTS}
+
+veryclean:
+	/bin/rm -f ${OBJECTS} ${EXEC}

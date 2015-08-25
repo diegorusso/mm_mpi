@@ -1,44 +1,30 @@
-default : all
 
-serial : 
-	if test -d mm-serial ; then \
-	( cd mm-serial ; make ; cp x.mm ../x.mm_serial ; ) ; fi
+default: all
 
-2D-cannon : 
-	if test -d mm-2D-cannon ; then \
-	( cd mm-2D-cannon ; make ; cp x.mm ../x.mm_2D_cannon ; ) ; fi
+serial:
+	cd src/serial && make veryclean && make && cp x.mm ../../x.mm_serial;
 
-2D-cannon-cblas : 
-	if test -d mm-2D-cannon ; then \
-	( cd mm_2D-cannon ; make clean; make -f Makefile.cblas ; cp x.mm ../x.mm_2D_cannon_cblas ; ) ; fi
+2D-cannon:
+	cd src/cannon && make veryclean && make && cp x.mm ../../x.mm_2D_cannon;
 
-2D-cannon-nonblock : 
-	if test -d mm-2D-cannon-nonblock ; then \
-	( cd mm-2D-cannon-nonblock ; make ; cp x.mm ../x.mm_2D_cannon_nonblock ; ) ; fi
+2D-cannon-cblas:
+	cd src/cannon && make -f Makefile.cblas veryclean && make -f Makefile.cblas && cp x.mm ../../x.mm_2D_cannon_cblas;
 
-2D-cannon-nonblock-cblas : 
-	if test -d mm-2D-cannon-nonblock ; then \
-	( cd mm-2D-cannon-nonblock ; make clean ; make -f Makefile.cblas ; cp x.mm ../x.mm_2D_cannon_cblas_nonblock ; ) ; fi
+2D-cannon-nonblock:
+	cd src/cannon && make -f Makefile.nonblock veryclean && make -f Makefile.nonblock && cp x.mm ../../x.mm_2D_cannon_nonblock;
 
-2D-cannon-nonblock-cblas-prepend : 
-	if test -d mm-2D-cannon-nonblock ; then \
-	( cd mm-2D-cannon-nonblock ; make clean ; make -f Makefile.cblas-prepend ; cp x.mm ../x.mm_2D_cannon_cblas_nonblock_prepend ; ) ; fi
+2D-cannon-nonblock-cblas:
+	cd src/cannon && make -f Makefile.nonblock.cblas veryclean && make -f Makefile.nonblock.cblas && cp x.mm ../../x.mm_2D_cannon_nonblock_cblas;
+
+2D-cannon-nonblock-cblas-prepend:
+	cd src/cannon && make -f Makefile.nonblock.cblas.prepend veryclean && make -f Makefile.nonblock.cblas.prepend && cp x.mm ../../x.mm_2D_cannon_nonblock_cblas_prepend;
 
 all : serial 2D-cannon 2D-cannon-nonblock 2D-cannon-cblas 2D-cannon-nonblock-cblas 2D-cannon-nonblock-cblas-prepend
 
 clean :
-	for dir in \
-		2D-cannon 2D-cannon-nonblock 2D-cannon-cblas 2D-cannon-nonblock-cblas 2D-cannon-nonblock-cblas-prepend \
-	; do \
-	    if test -d mm-$$dir ; then \
-		( cd mm-$$dir ; \
-		make veryclean ; ) \
-	    fi \
-	done ;  \
-	if test -d mm ; then \
-		( cd mm ; \
-		make veryclean ; ) \
-	fi
+	for dir in serial cannon; do \
+		(cd src/$$dir; make veryclean;) \
+	done;
 
 clean-exe : clean
 	rm ./x.mm_*

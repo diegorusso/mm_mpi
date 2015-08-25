@@ -1,5 +1,4 @@
 #include <math.h>
-#include <mpi.h>
 
 void matrix_reset( int m, int n, double *c )
 {
@@ -12,7 +11,7 @@ void matrix_reset( int m, int n, double *c )
    }
 }
 
-void gendat_serial( int lda, int m, int l, int n, double a[][lda], double b[][n] )
+void gendat( int lda, int m, int l, int n, double a[][lda], double b[][n] )
 // ---------------------------------------------------------------------
 // --- Routine 'gendat' generates matrix 'A' and 'B' for the
 //     matrix-matrix multiplication 'C = AB'.

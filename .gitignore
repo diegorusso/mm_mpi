@@ -1,2 +1,2 @@
-logs
-mm_mpi
+*.o
+x.*

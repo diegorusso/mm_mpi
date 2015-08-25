@@ -12,7 +12,7 @@ void matrix_reset( int m, int n, double *c )
    }
 }
 
-void gendat_mpi( int m, int l, int n, double *a, double *b)
+void gendat( int m, int l, int n, double *a, double *b)
 {
         int i, j, npes, N_DBLOCK, M_DBLOCK, L_DBLOCK;
         int myrank, my2drank, mycoords[2];

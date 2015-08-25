@@ -4,8 +4,8 @@
 #include <math.h>
 
 double cclock( void );
-int    check_cannon( int , int , int , double * );
-void   gendat_cannon( int, int, int, double *, double * );
+int    check( int , int , int , double * );
+void   gendat( int, int, int, double *, double * );
 void   matrix_reset( int , int , double * );
 void   MatrixMatrixMultiply(int , int, int, double *, double *, double *, MPI_Comm);
 void   prthead( void );
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
          b = calloc( L_DBLOCK*N_DBLOCK, sizeof( double ) );
          c = calloc( M_DBLOCK*N_DBLOCK, sizeof( double ) );
 
-         gendat_cannon( m, l, n, a, b);
+         gendat( m, l, n, a, b);
       
          MPI_Barrier(MPI_COMM_WORLD);
 
@@ -72,15 +72,14 @@ int main(int argc, char **argv)
              matrix_reset(M_DBLOCK,N_DBLOCK,c); 
              
              time_start = MPI_Wtime();
-        // Add the case to call MatrixMatrixMultiplyCannonNonBlock
-	     MatrixMatrixMultiplyCannon(m, l, n, a, b, c, MPI_COMM_WORLD);
+	         MatrixMatrixMultiply(m, l, n, a, b, c, MPI_COMM_WORLD);
              time_stop = MPI_Wtime();
              time_compute += (time_stop - time_start);
          }
 
          MPI_Barrier(MPI_COMM_WORLD);
 
-         okl = check_cannon( M_DBLOCK, l, N_DBLOCK, c );
+         okl = check( M_DBLOCK, l, N_DBLOCK, c );
          MPI_Reduce( &okl, &ok, 1, MPI_INTEGER, MPI_SUM, 0, MPI_COMM_WORLD );
  
          time_compute = time_compute / nrep;

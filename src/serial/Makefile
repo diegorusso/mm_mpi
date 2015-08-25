@@ -1,7 +1,9 @@
-include ../Makefile.mm.inc 
+include ../../Makefile.mm.inc
+
+VPATH = ../shared
 
 OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm.o \
-          state.o  cclock.o
+          state.o cclock.o
 
 EXEC    = x.mm
 
@@ -12,10 +14,10 @@ ${EXEC}: ${OBJECTS}
 .SUFFIXES: .c .o
 .c.o    :
 	@echo
-	${CC} ${CFLAGS} -c $<
+	${CC} ${CFLAGS} ${INCS} -c -o $@ $<
 
 clean   :
-	/bin/rm -f ${OBJECTS} *.oo
+	/bin/rm -f ${OBJECTS}
 
 veryclean:
-	/bin/rm -f ${OBJECTS} *.oo ${EXEC}
+	/bin/rm -f ${OBJECTS} ${EXEC}

@@ -2,7 +2,7 @@
 #include <float.h>
 #include <stdio.h>
 
-int check_cannon( int m, int l, int n, double *c )
+int check( int m, int l, int n, double *c )
 // ---------------------------------------------------------------------
 // --- Routine 'check' does the correctness check for the matrix-matrix
 //     multiplication in function 'mxm'. Because of the particular
