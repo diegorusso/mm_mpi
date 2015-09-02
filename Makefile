@@ -19,14 +19,12 @@ serial:
 2D-cannon-nonblock-cblas-prepend:
 	cd src/cannon && make -f Makefile.nonblock.cblas.prepend veryclean && make -f Makefile.nonblock.cblas.prepend && cp x.mm ../../x.mm_2D_cannon_nonblock_cblas_prepend;
 
-all : serial 2D-cannon 2D-cannon-nonblock 2D-cannon-cblas 2D-cannon-nonblock-cblas 2D-cannon-nonblock-cblas-prepend
+all: serial 2D-cannon 2D-cannon-nonblock 2D-cannon-cblas 2D-cannon-nonblock-cblas 2D-cannon-nonblock-cblas-prepend
 
-clean :
-	for dir in serial cannon; do \
-		(cd src/$$dir; make veryclean;) \
-	done;
+clean:
+	cd src/serial && make veryclean;
+	cd src/cannon && make veryclean;
+	cd src/cannon && make -f Makefile.nonblock veryclean;
 
-clean-exe : clean
+x-clean: clean
 	rm ./x.mm_*
-
-# DO NOT DELETE
