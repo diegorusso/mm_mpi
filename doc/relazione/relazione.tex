@@ -1,0 +1,50 @@
+\documentclass[a4paper, 12pt]{report}
+\usepackage[italian]{babel}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\frenchspacing
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{colortbl}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{sectsty}
+\usepackage{indentfirst}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage[Bjornstrup]{fncychap}
+\usepackage{subfigure}
+\usepackage{cite}
+
+
+\author{Diego Russo}
+\title{Nome Progetto}
+\date{2099-12-31}
+
+\hypersetup{
+	colorlinks=false,
+	linkcolor=blue
+}
+
+\begin{document}
+
+    \include{copertina}
+
+    \pagenumbering{arabic}
+    \pagestyle{fancy}
+    \rhead{}
+    \tableofcontents
+    \listoffigures
+
+    \include{abstract}
+    \include{introduzione}
+    
+    \bibliographystyle{plain}
+    \bibliography{relazione}
+
+\end{document}
