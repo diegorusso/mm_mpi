@@ -1,51 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double		cclock  (void);
-int		check      (int m, int l, int n, double *c);
-void		matrix_reset(int, int, double *);
-void		gendat    (int, int, int, int, double *a, double *b);
-void		mxm       (int, int, int, int, double *a, double *b, double *c);
-void		prthead   (void);
-void		prtspeed  (int, int, int, double, int, int);
-void		state     (char *);
+int         check(int m, int l, int n, double *c);
+void        matrix_reset(int, int, double *);
+void        gendat(int, int, int, double *a, double *b);
+void        mxm(int, int, int, double *a, double *b, double *c);
+// shared methods
+double      cclock(void);
+void        state(char *);
+void        prthead(void);
+void        prtspeed(int, int, int, double, int);
 
-int
-main() {
-	int		lda       , m, l, n;
-	int		ok        , nops, nrep;
-	int		i;
-	double         *a, *b, *c;
-	double		time_start, time_stop, time_compute;
-	FILE           *inl;
+int main() {
+    int     m, l, n;
+    int     ok = 0;
+    int     i, nrep;
+    double  *a, *b, *c;
+    double  time_start, time_stop, time_compute;
+    FILE    *input_file;
 
-	//------------------------------------------------------------------------
-		state("mm");
-	prthead();
-	inl = fopen("mm.in", "r");
-	while ((fscanf(inl, "%d%d%d%d\n", &m, &l, &n, &nrep) != EOF)) {
-		lda = l + 1;
-		a = calloc(m * lda, sizeof(double));
-		b = calloc(l * n, sizeof(double));
-		c = calloc(m * n, sizeof(double));
-		gendat(lda, m, l, n, a, b);
+    state("mm");
+    input_file = fopen("mm.in", "r");
+    while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &nrep) != EOF)) {
+        // calloc(): zero-initializes the buffer
+        a = calloc(m * l, sizeof(double));
+        b = calloc(l * n, sizeof(double));
+        c = calloc(m * n, sizeof(double));
 
-		for (i = 0; i < nrep; i++) {
-			matrix_reset(m, n, c);
-			time_start = cclock();
-			mxm(lda, m, l, n, a, b, c);
-			time_stop = cclock();
-			time_compute += (time_stop - time_start);
-		}
+        // Let's generate random data
+        gendat(m, l, n, a, b);
 
-		ok = check(m, l, n, c);
-		time_compute = time_compute / nrep;
-		nops = 2 * m * l * n;
-		prtspeed(m, l, n, time_compute, ok, nops);
-		fflush(stdout);
-		free(a);
-		free(b);
-		free(c);
-	}
-	printf("-------------------------------------------------------\n");
+        printf("Matrix C will be [%d x %d]\n", m, n);
+        printf("Let's do the math (%d repetitions)\n", nrep);
+        for (i = 0; i < nrep; i++) {
+            // reset the matrix containing results
+            matrix_reset(m, n, c);
+            // start the timer
+            time_start = cclock();
+            // do the actual multiplication
+            mxm(m, l, n, a, b, c);
+            // stop the timer
+            time_stop = cclock();
+            // Get the elapsed time
+            time_compute += (time_stop - time_start);
+            // check if everything was ok (0 means good)
+            ok += check(m, l, n, c);
+        }
+
+        // Get the average of time spent on computing
+        time_compute = time_compute / nrep;
+        // Print some nice results
+        prthead();
+        prtspeed(m, l, n, time_compute, ok);
+        fflush(stdout);
+        free(a);
+        free(b);
+        free(c);
+    }
+    printf("-------------------------------------------------------\n");
 }
