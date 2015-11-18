@@ -2,10 +2,10 @@
 #include <stdlib.h>
 
 int         check(int m, int l, int n, double *c);
-void        matrix_reset(int, int, double *);
 void        gendat(int, int, int, double *a, double *b);
 void        mxm(int, int, int, double *a, double *b, double *c);
 // shared methods
+void        matrix_reset(int, int, double *);
 double      cclock(void);
 void        state(char *);
 void        prthead(void);

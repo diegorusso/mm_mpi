@@ -3,7 +3,7 @@ include ../../Makefile.mm.inc
 VPATH = ../shared
 
 OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm.o \
-          state.o cclock.o
+          state.o cclock.o reset.o
 
 EXEC    = x.mm
 
