@@ -2,7 +2,6 @@
 #include <float.h>
 #include <stdio.h>
 
-
 // Function 'check' checks the correctness for the matrix-matrix
 // multiplication in function 'mxm'. Because of the particular
 // data that are generatedin function 'gendat', this check can be
@@ -14,6 +13,8 @@ int check(int m, int l, int n, double c[][n]) {
     // eps is a number infinitely small
     double  eps = DBL_EPSILON;
 
+    // The data I need to check are in array of array, so I iterate over every
+    // element in c using a double for loop to check its value
     for (i = 0; i < m; i++) {
         for (j = 0; j < n; j++) {
             // fabs returns the absolute value
