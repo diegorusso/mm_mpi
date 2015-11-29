@@ -2,8 +2,8 @@ include ../../Makefile.mm.inc
 
 VPATH = ../shared
 
-OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm.o \
-          state.o reset.o
+OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm.o mxms.o \
+          reset.o
 
 EXEC    = x.mm
 
