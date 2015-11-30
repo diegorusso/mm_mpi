@@ -7,11 +7,10 @@ void        mxm(int, int, int, double *a, double *b, double *c);
 // shared methods
 void        matrix_reset(int, int, double *);
 double      cclock(void);
-void        state(char *);
 void        prthead(void);
 void        prtspeed(int, int, int, double, int);
 
-int main() {
+int main(int argc, char **argv) {
     int     m, l, n;
     int     ok = 0;
     int     i, nrep;
@@ -19,15 +18,16 @@ int main() {
     double  time_start, time_stop, time_compute;
     FILE    *input_file;
 
-    state("mm");
     input_file = fopen("mm.in", "r");
+
+    // Read data from the file
     while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &nrep) != EOF)) {
         // calloc(): zero-initializes the buffer
         a = calloc(m * l, sizeof(double));
         b = calloc(l * n, sizeof(double));
         c = calloc(m * n, sizeof(double));
 
-        // Let's generate random data
+        // Let's generate some data
         gendat(m, l, n, a, b);
 
         printf("Matrix C will be [%d x %d]\n", m, n);
@@ -53,9 +53,10 @@ int main() {
         prthead();
         prtspeed(m, l, n, time_compute, ok);
         fflush(stdout);
+
+        // Free the memory fo the three matrices
         free(a);
         free(b);
         free(c);
     }
-    printf("-------------------------------------------------------\n");
 }
