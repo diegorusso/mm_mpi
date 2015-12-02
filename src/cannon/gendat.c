@@ -1,6 +1,7 @@
-#include <debug.h>
+#include <stdio.h>
 #include <math.h>
 #include <mpi.h>
+#include "format.h"
 
 // This method generates matrix A and B. Matrices are just vector of doubles
 // split in blocks
@@ -50,7 +51,7 @@ void gendat(int m, int l, int n, double *a, double *b) {
     //         coordinates of specified process
     MPI_Cart_coords(comm_2d, my2drank, 2, mycoords);
 
-    debug_print("%i x %i, rank %i \n", mycoords[0], mycoords[1], my2drank);
+    verbose_printf("%i x %i, rank %i \n", mycoords[0], mycoords[1], my2drank);
 
     // I split the matrices dimensions in blocks using the square root of the
     // number of processors I have available
@@ -58,14 +59,14 @@ void gendat(int m, int l, int n, double *a, double *b) {
     L_DBLOCK = (int)(l / sqrt(nprocesses));
     N_DBLOCK = (int)(n / sqrt(nprocesses));
 
-    debug_print("BLOCKS - M: %i L: %i N: %i \n", M_DBLOCK, L_DBLOCK, N_DBLOCK);
+    verbose_printf("BLOCKS - M: %i L: %i N: %i \n", M_DBLOCK, L_DBLOCK, N_DBLOCK);
 
     // I generate data for matrix A (m x l) represented by an array
     if (myrank == 0) printf("Generating data for matrix A[%d x %d]\n", m, l);
     for (j = 0; j < M_DBLOCK; j++) {
         for (i = 0; i < L_DBLOCK; i++) {
             a[j * L_DBLOCK + i] = (double)((mycoords[1] * L_DBLOCK) + i + 1);
-            debug_print("A[%i * %i + %i]: %f = %i * %i + %i + 1\n", j, L_DBLOCK, i, a[j * L_DBLOCK +i], mycoords[1], L_DBLOCK, i);
+            verbose_printf("A[%i * %i + %i]: %f = %i * %i + %i + 1\n", j, L_DBLOCK, i, a[j * L_DBLOCK +i], mycoords[1], L_DBLOCK, i);
         }
     }
 
@@ -75,7 +76,7 @@ void gendat(int m, int l, int n, double *a, double *b) {
         for (j = 0; j < L_DBLOCK; j++) {
             // Multiplicative inverse
             b[j * N_DBLOCK + i] = 1.0 / (double)((mycoords[0] * L_DBLOCK) + j + 1);
-            debug_print("B[%i * %i + %i]: %f = 1.0 / %i * %i + %i + 1\n", j, N_DBLOCK, i, b[j * N_DBLOCK + i], mycoords[0], L_DBLOCK, j);
+            verbose_printf("B[%i * %i + %i]: %f = 1.0 / %i * %i + %i + 1\n", j, N_DBLOCK, i, b[j * N_DBLOCK + i], mycoords[0], L_DBLOCK, j);
         }
     }
 

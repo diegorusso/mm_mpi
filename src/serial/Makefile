@@ -2,8 +2,7 @@ include ../../Makefile.mm.inc
 
 VPATH = ../shared
 
-OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm.o \
-          cclock.o reset.o
+OBJECTS = mm.o check.o gendat.o mxm.o format.o reset.o utils.o
 
 EXEC    = x.mm
 

@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "shared.h"
+#include "format.h"
+#include "reset.h"
+#include "utils.h"
 
 int         check(int m, int l, int n, double *c);
 void        gendat(int, int, int, double *a, double *b);
 void        mxm(int, int, int, double *a, double *b, double *c);
-// shared methods
-void        matrix_reset(int, int, double *);
-double      cclock(void);
-void        prthead(void);
-void        prtspeed(int, int, int, double, int);
+
+// By default berbose is disabled
+// verbose is a global variable (in shared.h)
+int verbose = 0;
 
 int main(int argc, char **argv) {
     int     m, l, n;
@@ -18,7 +21,7 @@ int main(int argc, char **argv) {
     double  time_start, time_stop, time_compute;
     FILE    *input_file;
 
-    input_file = fopen("mm.in", "r");
+    parse_arguments(argc, argv, &input_file);
 
     // Read data from the file
     while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &nrep) != EOF)) {

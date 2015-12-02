@@ -2,8 +2,8 @@ include ../../Makefile.mm.inc
 
 VPATH = ../shared
 
-OBJECTS = mm.o check.o prthead.o gendat.o prtspeed.o mxm.o mxms.o \
-          reset.o
+OBJECTS = mm.o check.o gendat.o mxm.o mxms.o \
+          format.o reset.o utils.o
 
 EXEC    = x.mm
 
@@ -14,7 +14,7 @@ ${EXEC}: ${OBJECTS}
 .SUFFIXES:  .c .o
 .c.o    :
 	@echo
-	${CC_MPI} ${CFLAGS} ${DEBUG} -D__CBLAS ${INCS} -c -o $@ $<
+	${CC_MPI} ${CFLAGS} -D__CBLAS ${INCS} -c -o $@ $<
 
 clean   :
 	/bin/rm -f ${OBJECTS}

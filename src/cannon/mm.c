@@ -1,17 +1,19 @@
-#include <debug.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
 #include <math.h>
+#include "shared.h"
+#include "format.h"
+#include "reset.h"
+#include "utils.h"
 
 int         check(int, int, int, double *);
 void        gendat(int, int, int, double *, double *);
 void        mxm(int, int, int, double *, double *, double *, MPI_Comm);
-// shared methods
-void        matrix_reset(int, int, double *);
-double      cclock(void);
-void        prthead (void);
-void        prtspeed(int, int, int, double, int);
+
+// By default berbose is disabled
+// verbose is a global variable (in shared.h)
+int verbose = 0;
 
 int main(int argc, char **argv) {
     int     m, l, n, M_DBLOCK, N_DBLOCK, L_DBLOCK;
@@ -19,6 +21,7 @@ int main(int argc, char **argv) {
     int     i, myrank, nprocesses, sqrt_nprocesses;
     double  *a, *b, *c;
     double  time_start, time_stop, time_compute;
+    int     verbose = 0;
     FILE    *input_file;
 
     // Initialize the MPI execution environment
@@ -54,7 +57,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    input_file = fopen("mm.in", "r");
+    parse_arguments(argc, argv, &input_file);
 
     // Read data from the file
     while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &nrep) != EOF)) {
