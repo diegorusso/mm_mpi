@@ -121,8 +121,8 @@ int main(int argc, char **argv) {
 
             if (myrank == 0) {
                 // Print some nice results
-                prthead();
-                prtspeed(m, l, n, time_compute, ok);
+                header();
+                results(m, l, n, time_compute, ok);
                 fflush(stdout);
             }
 

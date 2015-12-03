@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include "shared.h"
 
+// Function to print debug logs
 void verbose_printf(const char* fmt, ...) {
     if (verbose) {
         va_list args;
@@ -11,7 +12,8 @@ void verbose_printf(const char* fmt, ...) {
     };
 };
 
-void prthead(void) {
+// The function prints a header
+void header(void) {
     printf("mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)\n");
     printf("-------------------------------------------------------\n");
     printf("      Problem size     |            |            |    |\n");
@@ -20,9 +22,9 @@ void prthead(void) {
 }
 
 
-// This functions caulcates the speed of mm taking in account the data size and
-// the time passed
-void prtspeed(int m, int l, int n, double time, int ok) {
+// This functions calculates the speed of mm taking in account the data size
+// and the time passed the it prints results at screen
+void results(int m, int l, int n, double time, int ok) {
     double      numops, gflops;
 
     // Speed is given by size of the data divided by time passed

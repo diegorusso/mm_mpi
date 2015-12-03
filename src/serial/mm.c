@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
         // Get the average of time spent on computing
         time_compute = time_compute / nrep;
         // Print some nice results
-        prthead();
-        prtspeed(m, l, n, time_compute, ok);
+        header();
+        results(m, l, n, time_compute, ok);
         fflush(stdout);
 
         // Free the memory fo the three matrices

@@ -5,12 +5,12 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-
-void print_usage(char *app_name) {
+// Private function to print the application help
+void _print_usage(char *app_name) {
     printf("Usage: %s [-h -v] -f filename\n", app_name);
 }
 
-
+// The function parses the arguments passed by CLI
 void parse_arguments(int argc, char **argv, FILE **input_file){
     int option = 0;
     int file_specified = 0;
@@ -25,7 +25,7 @@ void parse_arguments(int argc, char **argv, FILE **input_file){
                 verbose = 1;
             } break;
             case 'h' : {
-                print_usage(argv[0]);
+                _print_usage(argv[0]);
                 exit(0);
             } break;
             default:
@@ -36,7 +36,7 @@ void parse_arguments(int argc, char **argv, FILE **input_file){
     // Do some checks
     if (file_specified == 0) {
         printf("ERROR: Please specify the input file with -f\n");
-        print_usage(argv[0]);
+        _print_usage(argv[0]);
         exit(1);
     };
 
