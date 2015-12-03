@@ -123,6 +123,7 @@ int main(int argc, char **argv) {
                 // Print some nice results
                 header();
                 results(m, l, n, time_compute, ok);
+                footer();
                 fflush(stdout);
             }
 

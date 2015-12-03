@@ -40,3 +40,8 @@ void results(int m, int l, int n, double time, int ok) {
 
     fflush(stdout);
 }
+
+// Does it need any comment?
+void footer(void) {
+    printf("-------------------------------------------------------\n");
+};
