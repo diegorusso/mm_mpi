@@ -17,7 +17,7 @@ int verbose = 0;
 
 int main(int argc, char **argv) {
     int     m, l, n, M_DBLOCK, N_DBLOCK, L_DBLOCK;
-    int     ok, okl, nrep;
+    int     ok, local_check, nrep;
     int     i, myrank, nprocesses, sqrt_nprocesses;
     double  *a, *b, *c;
     double  time_start, time_stop, time_compute;
@@ -113,8 +113,20 @@ int main(int argc, char **argv) {
             // Let's wait all the nodes have computed their calculation
             MPI_Barrier(MPI_COMM_WORLD);
 
-            okl = check(M_DBLOCK, l, N_DBLOCK, c);
-            MPI_Reduce(&okl, &ok, 1, MPI_INTEGER, MPI_SUM, 0, MPI_COMM_WORLD);
+            local_check = check(M_DBLOCK, l, N_DBLOCK, c);
+
+            // Reduces values on all processes to a single value
+            // sendbuf: address of send buffer (choice)
+            // recvbuf: address of receive buffer (choice)
+            // count: number of elements in send buffer (integer)
+            // datatype: data type of elements of send buffer (handle)
+            // op: reduce operation (handle)
+            // root: rank of root process (integer)
+            // comm: communicator (handle)
+            // I need to sum all the local checks for every processor and see
+            // if there was an error somewhere. I store the result to ok,
+            // whish hosts the global sum
+            MPI_Reduce(&local_check, &ok, 1, MPI_INTEGER, MPI_SUM, 0, MPI_COMM_WORLD);
 
             // Get the average of time spent on computing
             time_compute = time_compute / nrep;
