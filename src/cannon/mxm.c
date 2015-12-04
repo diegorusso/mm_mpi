@@ -1,12 +1,8 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <math.h>
+#include "mxm-local.h"
 
-#if defined __CBLAS
-#include "cblas.h"
-#endif
-
-void mxms(int m, int l, int n, double *a, double *b, double *c);
 
 void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 	int		i         , npes, M_DBLOCK, N_DBLOCK, L_DBLOCK, A_DBLOCK,
@@ -56,11 +52,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 	}
 	for (i = 0; i < Dimensions[0]; i++) {
 
-#if defined __CBLAS
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M_DBLOCK, N_DBLOCK, L_DBLOCK, 1.0, a, L_DBLOCK, b, N_DBLOCK, 1.0, c, N_DBLOCK);
-#else
-		mxms(M_DBLOCK, L_DBLOCK, N_DBLOCK, a, b, c);
-#endif
+		mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a, b, c);
 
 		source = (mycoords[1] + 1) % Dimensions[0];;
 		destination = (mycoords[1] + Dimensions[0] - 1) % Dimensions[0];

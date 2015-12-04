@@ -2,7 +2,7 @@ include ../../Makefile.mm.inc
 
 VPATH = ../shared
 
-OBJECTS = mm.o check.o gendat.o mxm.o mxms.o \
+OBJECTS = mm.o check.o gendat.o mxm.o mxm-local.o \
           format.o reset.o utils.o
 
 EXEC    = x.mm

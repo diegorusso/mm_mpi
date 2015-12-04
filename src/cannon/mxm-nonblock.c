@@ -2,12 +2,8 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <math.h>
+#include "mxm-local.h"
 
-#if defined __CBLAS
-#include "cblas.h"
-#endif
-
-void mxms(int m, int l, int n, double *a, double *b, double *c);
 
 void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 	int		i         , npes, M_DBLOCK, N_DBLOCK, L_DBLOCK, A_DBLOCK,
@@ -77,11 +73,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 		MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, source_a, 303, Row_comm, &req_handlers[2]);
 		MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, source_b, 303, Col_comm, &req_handlers[3]);
 
-#if defined __CBLAS
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M_DBLOCK, N_DBLOCK, L_DBLOCK, 1.0, a_buf[i % 2], L_DBLOCK, b_buf[i % 2], N_DBLOCK, 1.0, c, N_DBLOCK);
-#else
-		mxms(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
-#endif
+		mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
 
 		MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, destination_a, 303, Row_comm, &req_handlers[0]);
 		MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, destination_b, 303, Col_comm, &req_handlers[1]);
@@ -94,12 +86,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 		MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, source_a, 303, Row_comm, &req_handlers[2]);
 		MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, source_b, 303, Col_comm, &req_handlers[3]);
 
-#if defined __CBLAS
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M_DBLOCK, N_DBLOCK, L_DBLOCK, 1.0, a_buf[i % 2], L_DBLOCK, b_buf[i % 2], N_DBLOCK, 1.0, c, N_DBLOCK);
-#else
-		mxms(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
-#endif
-
+		mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
 #endif
 		MPI_Waitall(4, req_handlers, req_handlers_status);
 	}
