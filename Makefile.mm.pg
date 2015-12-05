@@ -1,0 +1,10 @@
+SELF_DIR := $(realpath .)
+
+CC	= gcc
+CC_MPI  = mpicc
+INCS    = -I "$(SELF_DIR)/../shared/"
+CFLAGS  = -O3 -openmp
+LD      = $(CC)
+LD_MPI  = $(CC_MPI)
+LDFLAGS = $(CFLAGS) -lopenblas
+LIBS    = -pthread

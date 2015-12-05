@@ -1,11 +1,28 @@
-To compile
+### ChemGrid Environment
+Link the Makefile
+$ ln -s Makefile.mm.pg Makefile.mm.inc # ChemGrid
 
-$ mpicc mm_mpi.c -o mm_mpi
+To compile
+$ make
 
 To run
-
-$ qsub -lnodes=10:ppn=2 -d . -N mm -e output -o output run_mm_mpi.sh
+$ PROC_NAME=x.mm_2D_TYPE
+$ qsub -lnodes=4:ppn=1 -d . -N $PROC_NAME -e logs -o logs -v EXE=$PROC_NAME,DATA=example_data run_mm_mpi_pg.sh
 
 To check the jobs:
-
 $ qstats
+
+Logs are located in log and thei format is
+mm.eJOBID -> error log
+mm.eJOBID -> output log
+
+
+### Dev Environemnt (MBP)
+Link the Makefile
+$ ln -s Makefile.mm.dev Makefile.mm.inc
+
+Compile
+$ make
+
+To run
+$ mpirun -n 4 ./x.mm_2D_cannon -f data
