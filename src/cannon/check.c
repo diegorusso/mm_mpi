@@ -1,6 +1,7 @@
 #include <math.h>
 #include <float.h>
 #include <stdio.h>
+#include "format.h"
 
 // Function 'check' checks the correctness for the matrix-matrix
 // multiplication in function 'mxm'. Because of the particular
@@ -23,8 +24,11 @@ int check(int m, int l, int n, double *c) {
         // something wrong in the check.
         // tvalue - c[i] shouldn't be bigger than the minimum positive
         // number in the system. Ideally the difference should be 0.
-        if (fabs(tvalue - c[i]) > eps)
+        if (fabs(tvalue - c[i]) > eps) {
+            verbose_printf("Something wrong checking matrix C");
+            verbose_printf("fabs(%G - %G) > %G\n", tvalue, c[i], eps);
             ok++;
+        }
     }
     // To be successfull, ok should be 0
     return (ok);
