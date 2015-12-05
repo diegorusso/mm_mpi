@@ -1,4 +1,4 @@
-#if defined __CBLAS
+#if defined CBLAS
 #include "cblas.h"
 #endif
 
@@ -6,7 +6,7 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
     int     i, j, k;
     double  t;
 
-#if defined __OPENMP_OUTER
+#if defined OPENMP_OUTER
 #pragma omp parallel for default(shared) private(t,k,j) schedule(runtime)
     for (i = 0; i < m; i++) {
         for (j = 0; j < l; j++) {
@@ -17,7 +17,7 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
         }
     }
 
-#elif defined __OPENMP_MIDDLE
+#elif defined OPENMP_MIDDLE
     for (i = 0; i < m; i++) {
 #pragma omp parallel for default(shared) private(t,j) schedule(runtime)
         for (k = 0; k < n; k++) {
@@ -29,7 +29,7 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
         }
     }
 
-#elif defined __OPENMP_INNER
+#elif defined OPENMP_INNER
     for (i = 0; i < m; i++) {
         for (j = 0; j < l; j++) {
             t = a[i * l + j];
@@ -40,7 +40,7 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
         }
     }
 
-#elif defined __OPENMP_NESTED
+#elif defined OPENMP_NESTED
 #pragma omp parallel for default(shared) private(t,k,j) num_threads(2) schedule(runtime)
     for (i = 0; i < m; i++) {
 #pragma omp parallel for default(shared) private(t,j) num_threads(2) schedule(runtime)
@@ -53,7 +53,7 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
         }
     }
 
-#elif defined __CBLAS
+#elif defined CBLAS
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, l, 1.0, a, l, b, n, 1.0, c, n);
 
 #else

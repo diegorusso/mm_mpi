@@ -7,17 +7,14 @@ OBJECTS = mm.o check.o gendat.o mxm.o mxm-local.o \
 
 EXEC    = x.mm
 
-${EXEC}: ${OBJECTS}
+${EXEC}: clean ${OBJECTS}
 	@echo
 	${LD_MPI} ${LDFLAGS} ${OBJECTS} ${LIBS} -o ${EXEC}
 
 .SUFFIXES:  .c .o
 .c.o    :
 	@echo
-	${CC_MPI} ${CFLAGS} -D__CBLAS ${INCS} -c -o $@ $<
+	${CC_MPI} ${CFLAGS} -DCBLAS ${INCS} -c -o $@ $<
 
-clean   :
-	/bin/rm -f ${OBJECTS}
-
-veryclean:
+clean:
 	/bin/rm -f ${OBJECTS} ${EXEC}

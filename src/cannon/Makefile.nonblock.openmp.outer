@@ -14,7 +14,7 @@ ${EXEC}: clean ${OBJECTS}
 .SUFFIXES:  .c .o
 .c.o    :
 	@echo
-	${CC_MPI} ${CFLAGS} -DCBLAS ${INCS} -c -o $@ $<
+	${CC_MPI} ${CFLAGS} -DOPENMP_OUTER ${INCS} -c -o $@ $<
 
 clean:
 	/bin/rm -f ${OBJECTS} ${EXEC}

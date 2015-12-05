@@ -69,17 +69,6 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 		source_b = (mycoords[0] + 1) % Dimensions[1];
 		destination_b = (mycoords[0] + Dimensions[1] - 1) % Dimensions[1];
 
-#if defined __PREPOSTED_NONBLOCKING
-		MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, source_a, 303, Row_comm, &req_handlers[2]);
-		MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, source_b, 303, Col_comm, &req_handlers[3]);
-
-		mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
-
-		MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, destination_a, 303, Row_comm, &req_handlers[0]);
-		MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, destination_b, 303, Col_comm, &req_handlers[1]);
-
-#else
-
 		MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, destination_a, 303, Row_comm, &req_handlers[0]);
 		MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, destination_b, 303, Col_comm, &req_handlers[1]);
 
@@ -87,7 +76,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 		MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, source_b, 303, Col_comm, &req_handlers[3]);
 
 		mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
-#endif
+
 		MPI_Waitall(4, req_handlers, req_handlers_status);
 	}
 
