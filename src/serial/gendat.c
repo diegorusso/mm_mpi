@@ -13,7 +13,7 @@ void gendat(int m, int l, int n, double a[][l], double b[][n]){
         for (i = 0; i < l; i++) {
             // I just store i+1
             a[j][i] = (double)(i + 1);
-            verbose_printf("a[%i][%i] = %i + 1\n", j, i, i);
+            verbose_printf(__func__, -1, "a[%i][%i] = %i + 1\n", j, i, i);
         }
     }
 
@@ -23,7 +23,7 @@ void gendat(int m, int l, int n, double a[][l], double b[][n]){
         for (j = 0; j < l; j++) {
             // I store the multiplicative inverse of a[j][i]
             b[j][i] = 1.0 / (double)(j + 1);
-            verbose_printf("b[%i][%i] = 1.0 / (%i + 1)\n", j, i, j);
+            verbose_printf(__func__, -1, "b[%i][%i] = 1.0 / (%i + 1)\n", j, i, j);
         }
     }
 }

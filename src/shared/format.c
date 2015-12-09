@@ -3,10 +3,15 @@
 #include "shared.h"
 
 // Function to print debug logs
-void verbose_printf(const char* fmt, ...) {
+void verbose_printf(const char* func_name, int mpi_rank, const char* fmt, ...){
     if (verbose) {
         va_list args;
         va_start(args, fmt);
+        if (mpi_rank > -1) {
+            fprintf(stderr, "function: %s, MPI rank: %i - ", func_name, mpi_rank);
+        } else {
+            fprintf(stderr, "function: %s - ", func_name);
+        }
         vfprintf(stderr, fmt, args);
         va_end(args);
     };

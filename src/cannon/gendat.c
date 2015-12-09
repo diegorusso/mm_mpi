@@ -25,7 +25,8 @@ void gendat(int m, int l, int n, double *a, double *b) {
     // I have just two dimensions: they will be passed to build the MPI cart
     // communicator. Every dimension has the squre root of number of processors
     dimensions[0] = dimensions[1] = (int)sqrt(nprocesses);
-    // I set the periodic attribut to false for every dimension
+
+    // I set the periodic attribute to false for every dimension
     periods[0] = periods[1] = 0;
 
     // It creates a new communicator with the following topology information:
@@ -51,7 +52,7 @@ void gendat(int m, int l, int n, double *a, double *b) {
     //         coordinates of specified process
     MPI_Cart_coords(comm_2d, my2drank, 2, mycoords);
 
-    verbose_printf("%i x %i, rank %i \n", mycoords[0], mycoords[1], my2drank);
+    verbose_printf(__func__, my2drank, "coords: %i x %i", mycoords[0], mycoords[1]);
 
     // I split the matrices dimensions in blocks using the square root of the
     // number of processors I have available
@@ -59,14 +60,14 @@ void gendat(int m, int l, int n, double *a, double *b) {
     L_DBLOCK = (int)(l / sqrt(nprocesses));
     N_DBLOCK = (int)(n / sqrt(nprocesses));
 
-    verbose_printf("BLOCKS - M: %i L: %i N: %i \n", M_DBLOCK, L_DBLOCK, N_DBLOCK);
+    verbose_printf(__func__, my2drank, "BLOCKS - M: %i L: %i N: %i \n", M_DBLOCK, L_DBLOCK, N_DBLOCK);
 
     // I generate data for matrix A (m x l) represented by an array
     if (myrank == 0) printf("Generating data for matrix A[%d x %d]\n", m, l);
     for (j = 0; j < M_DBLOCK; j++) {
         for (i = 0; i < L_DBLOCK; i++) {
             a[j * L_DBLOCK + i] = (double)((mycoords[1] * L_DBLOCK) + i + 1);
-            verbose_printf("A[%i * %i + %i]: %f = %i * %i + %i + 1\n", j, L_DBLOCK, i, a[j * L_DBLOCK +i], mycoords[1], L_DBLOCK, i);
+            verbose_printf(__func__, my2drank, "A[%i * %i + %i]: %f = %i * %i + %i + 1\n", j, L_DBLOCK, i, a[j * L_DBLOCK +i], mycoords[1], L_DBLOCK, i);
         }
     }
 
@@ -76,7 +77,7 @@ void gendat(int m, int l, int n, double *a, double *b) {
         for (j = 0; j < L_DBLOCK; j++) {
             // Multiplicative inverse
             b[j * N_DBLOCK + i] = 1.0 / (double)((mycoords[0] * L_DBLOCK) + j + 1);
-            verbose_printf("B[%i * %i + %i]: %f = 1.0 / %i * %i + %i + 1\n", j, N_DBLOCK, i, b[j * N_DBLOCK + i], mycoords[0], L_DBLOCK, j);
+            verbose_printf(__func__, my2drank, "B[%i * %i + %i]: %f = 1.0 / %i * %i + %i + 1\n", j, N_DBLOCK, i, b[j * N_DBLOCK + i], mycoords[0], L_DBLOCK, j);
         }
     }
 

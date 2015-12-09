@@ -25,8 +25,8 @@ int check(int m, int l, int n, double *c) {
         // tvalue - c[i] shouldn't be bigger than the minimum positive
         // number in the system. Ideally the difference should be 0.
         if (fabs(tvalue - c[i]) > eps) {
-            verbose_printf("Something wrong checking matrix C");
-            verbose_printf("fabs(%G - %G) > %G\n", tvalue, c[i], eps);
+            printf("Something wrong checking matrix C\n");
+            verbose_printf(__func__, -1, "fabs(%G - %G) > %G\n", tvalue, c[i], eps);
             ok++;
         }
     }
