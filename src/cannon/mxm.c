@@ -1,81 +1,181 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
 #include <math.h>
+#include "format.h"
 #include "mxm-local.h"
 
-
+// This method performs the actual multiplication between matrix A and B
+// storing data in C. The method accepts in input the dimensions, three
+// pointers for the matrices and the MPI communicator (MPI_COMM_WORLD)
 void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
-	int		i         , npes, M_DBLOCK, N_DBLOCK, L_DBLOCK, A_DBLOCK,
-			B_DBLOCK;
-	int		myrank    , my2drank, mycoords[2];
-	int		uprank    , downrank, leftrank, rightrank, coords[2];
-	int		shiftsource, shiftdest, source, destination;
-	int		Periods    [2], Dimensions[2], Coordinates[2], Remain_dims[2];
+    int     num_processes;
+    int     M_DBLOCK, N_DBLOCK, L_DBLOCK, A_DBLOCK, B_DBLOCK;
+    int     rank, rank_2d, coordinates[2];
+    int     source, destination;
+    int     up, down, left, right;
+    int     periods[2], dimensions[2];
+#if defined NONBLOCKING
+    // I need these two buffers. Those are arrays of double pointers
+    double  *a_buf[2], *b_buf[2];
 
-	MPI_Status	status;
-	MPI_Comm	comm_2d, Row_comm, Col_comm;
+    // Array of requests
+    MPI_Request request_handles[4];
+    // Array of statuses
+    MPI_Status  status_handles[4];
+#endif
 
-	MPI_Comm_size(comm, &npes);
-	MPI_Comm_rank(comm, &myrank);
+    // That's just a MPI status
+    MPI_Status  status;
 
-	Dimensions[0] = Dimensions[1] = (int)sqrt(npes);
-	Periods[0] = Periods[1] = 1;
+    // Define 2D communicator. Not to forget there is also comm, which is the
+    // world one
+    MPI_Comm    comm_2d;
 
-	MPI_Cart_create(comm, 2, Dimensions, Periods, 1, &comm_2d);
-	MPI_Comm_rank(comm_2d, &my2drank);
-	MPI_Cart_coords(comm_2d, my2drank, 2, mycoords);
+    // Determines the size of the group associated with a communicator: it
+    // returns number of processes in the group MPI_COMM_WORLD
+    MPI_Comm_size(comm, &num_processes);
 
-	Remain_dims[0] = 1;
-	Remain_dims[1] = 0;
-	MPI_Cart_sub(comm_2d, Remain_dims, &Col_comm);
+    // Determines the rank of the calling process in the communicator: it
+    // returns the rank of the calling process in the group MPI_COMM_WORLD
+    MPI_Comm_rank(comm, &rank);
 
-	Remain_dims[0] = 0;
-	Remain_dims[1] = 1;
-	MPI_Cart_sub(comm_2d, Remain_dims, &Row_comm);
+    // I have just two dimensions: they will be passed to build the MPI cart
+    // communicator. Every dimension has the squre root of number of processors
+    dimensions[0] = dimensions[1] = (int)sqrt(num_processes);
 
-	M_DBLOCK = (int)(m / sqrt(npes));
-	L_DBLOCK = (int)(l / sqrt(npes));
-	N_DBLOCK = (int)(n / sqrt(npes));
+    // I set the periodic attribute to true for every dimension
+    periods[0] = periods[1] = 1;
 
-	A_DBLOCK = M_DBLOCK * L_DBLOCK;
-	B_DBLOCK = L_DBLOCK * N_DBLOCK;
+    // It creates a new communicator with the following topology information:
+    // comm_old: MPI_COMM_WORLD
+    // ndims: number of dimensions of cartesian grid
+    // dims: interger array of size ndims specifying the number of process in
+    //       each dimension
+    // periods: logical array of size ndims specifying whether the grid is
+    //          periodic (true) or not (false) in each dimension
+    // reorder: ranking may be reordered (true) or not (false)
+    // comm_new: output cartesian communicator
+    MPI_Cart_create(comm, 2, dimensions, periods, 1, &comm_2d);
 
-	if (mycoords[0] != 0) {
-		source = (mycoords[0] + mycoords[1]) % Dimensions[0];
-		destination = (mycoords[1] + Dimensions[0] - mycoords[0]) % Dimensions[0];
-		MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, Row_comm, &status);
-	}
-	if (mycoords[1] != 0) {
-		source = (mycoords[0] + mycoords[1]) % Dimensions[1];
-		destination = (mycoords[0] + Dimensions[1] - mycoords[1]) % Dimensions[1];
-		MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, Col_comm, &status);
-	}
-	for (i = 0; i < Dimensions[0]; i++) {
+    // Determines the rank of the calling process in the communicator: it
+    // returns the rank of the calling process in the group comm_2d
+    MPI_Comm_rank(comm_2d, &rank_2d);
 
-		mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a, b, c);
+    // Determines process coords in cartesian topology given rank in group
+    // comm: communicator with cartesian structure
+    // rank: rank of a process within group of comm
+    // maxdims: length of vector coords in the calling program
+    // coords: integer array (of size ndims ) containing the Cartesian
+    //         coordinates of specified process
+    MPI_Cart_coords(comm_2d, rank_2d, 2, coordinates);
 
-		source = (mycoords[1] + 1) % Dimensions[0];;
-		destination = (mycoords[1] + Dimensions[0] - 1) % Dimensions[0];
-		MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, Row_comm, &status);
+    verbose_printf(__func__, rank_2d, "My coords are: %i, %i\n", coordinates[0], coordinates[1]);
 
-		source = (mycoords[0] + 1) % Dimensions[1];
-		destination = (mycoords[0] + Dimensions[1] - 1) % Dimensions[1];
-		MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, Col_comm, &status);
-	}
+    // I split the matrices dimensions in blocks using the square root of the
+    // number of processors I have available
+    M_DBLOCK = (int)(m / sqrt(num_processes));
+    L_DBLOCK = (int)(l / sqrt(num_processes));
+    N_DBLOCK = (int)(n / sqrt(num_processes));
 
+    // Once I have the block dimensions I calculate the blocks for matrix A and B
+    A_DBLOCK = M_DBLOCK * L_DBLOCK;
+    B_DBLOCK = L_DBLOCK * N_DBLOCK;
 
-	/* Rearange step is MANDATORY */
-	if (mycoords[0] != 0) {
-		destination = (mycoords[0] + mycoords[1]) % Dimensions[0];
-		source = (mycoords[1] + Dimensions[0] - mycoords[0]) % Dimensions[0];
-		MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, Row_comm, &status);
-	}
-	if (mycoords[1] != 0) {
-		destination = (mycoords[0] + mycoords[1]) % Dimensions[1];
-		source = (mycoords[0] + Dimensions[1] - mycoords[1]) % Dimensions[1];
-		MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, Col_comm, &status);
-	}
-	MPI_Comm_free(&Col_comm);
-	MPI_Comm_free(&Row_comm);
-	MPI_Comm_free(&comm_2d);
+#if defined NONBLOCKING
+    a_buf[0] = a;
+    a_buf[1] = (double *)malloc(A_DBLOCK * sizeof(double));
+
+    b_buf[0] = b;
+    b_buf[1] = (double *)malloc(B_DBLOCK * sizeof(double));
+#endif
+
+    // Returns the shifted source and destination ranks, given a  shift
+    // direction and amount
+    // comm: communicator with cartesian structure
+    // direction: coordinate dimension of shift. The direction argument is in
+    //            the range [0,n-1] for an n-dimensional Cartesian mesh.
+    // disp: displacement (> 0: upwards shift, < 0: downwards shift)
+    // rank_source: rank of source process
+    // rank_dest: rank of destination process
+    // With these two commands I get the ranks of the left and up shifts
+    MPI_Cart_shift(comm_2d, 1, -1, &right, &left);
+    MPI_Cart_shift(comm_2d, 0, -1, &down, &up);
+
+    // This is the initial alignment of A
+    MPI_Cart_shift(comm_2d, 1, -coordinates[0], &source, &destination);
+    // Sends and receives using a single buffer
+    // buf: initial address of send and receive buffer
+    // count: number of elements in send and receive buffer
+    // datatype: type of elements in send and receive buffer
+    // dest: rank of destination
+    // sendtag: send message tag
+    // source: rank of source
+    // recvtag: receive message tag
+    // comm: communicator
+    // status: status object
+#if defined NONBLOCKING
+    MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#else
+    MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#endif
+
+    // This is the initial alignment of B
+    MPI_Cart_shift(comm_2d, 0, -coordinates[1], &source, &destination);
+#if defined NONBLOCKING
+    MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#else
+    MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#endif
+
+    for (int i = 0; i < dimensions[0]; i++) {
+#if defined NONBLOCKING
+        // Perform the local matrix multiplication
+        mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
+
+        // Shift matrix A left by one
+        MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, right, 1, comm_2d, &request_handles[0]);
+        MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, left, 1, comm_2d, &request_handles[1]);
+
+        // Shift matrix B up by one
+        MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, down, 1, comm_2d, &request_handles[2]);
+        MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, up, 1, comm_2d, &request_handles[3]);
+
+        // Let's wait all the shits/communications to happen
+        MPI_Waitall(4, request_handles, status_handles);
+#else
+        // Perform the local matrix multiplication
+        mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a, b, c);
+
+        // Shift matrix A left by one
+        MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, left, 1, right, 1, comm_2d, &status);
+
+        // Shift matrix B up by one
+        MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, up, 1, down, 1, comm_2d, &status);
+#endif
+    }
+
+    // Rearange matrix A
+    MPI_Cart_shift(comm_2d, 1, +coordinates[0], &source, &destination);
+#if defined NONBLOCKING
+    MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#else
+    MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#endif
+
+    // Rearange matrix B
+    MPI_Cart_shift(comm_2d, 0, +coordinates[1], &source, &destination);
+#if defined NONBLOCKING
+    MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#else
+    MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+#endif
+
+#if defined NONBLOCKING
+    free(a_buf[1]);
+    free(b_buf[1]);
+#endif
+
+    // Free up MPI communicator
+    MPI_Comm_free(&comm_2d);
 }
