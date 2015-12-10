@@ -52,7 +52,7 @@ void gendat(int m, int l, int n, double *a, double *b) {
     //         coordinates of specified process
     MPI_Cart_coords(comm_2d, my2drank, 2, mycoords);
 
-    verbose_printf(__func__, my2drank, "coords: %i x %i", mycoords[0], mycoords[1]);
+    verbose_printf(__func__, my2drank, "coords: %i x %i\n", mycoords[0], mycoords[1]);
 
     // I split the matrices dimensions in blocks using the square root of the
     // number of processors I have available
