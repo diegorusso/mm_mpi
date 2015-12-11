@@ -9,6 +9,7 @@
 // storing data in C. The method accepts in input the dimensions, three
 // pointers for the matrices and the MPI communicator (MPI_COMM_WORLD)
 void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
+    int     i;
     int     num_processes;
     int     M_DBLOCK, N_DBLOCK, L_DBLOCK, A_DBLOCK, B_DBLOCK;
     int     rank, rank_2d;
@@ -146,7 +147,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 
     debug_printf(__func__, rank,
                  "Iterate through %i dimensions\n", dimensions[0]);
-    for (int i = 0; i < dimensions[0]; i++) {
+    for (i = 0; i < dimensions[0]; i++) {
 #if defined NONBLOCKING
         // Perform the local matrix multiplication
         mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
