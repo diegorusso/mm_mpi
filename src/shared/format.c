@@ -3,13 +3,14 @@
 #include "shared.h"
 
 // Function to print debug logs
-void verbose_printf(const char* func_name, int mpi_rank, const char* fmt, ...){
-    if (verbose) {
+void debug_printf(const char* func_name, int mpi_rank, const char* fmt, ...){
+    if (debug) {
         va_list args;
         va_start(args, fmt);
-        if (mpi_rank > -1) {
-            fprintf(stderr, "[function: %s, MPI rank: %i] ", func_name, mpi_rank);
-        } else {
+        if (mpi_rank > -1) { // That's for MPI debug
+            fprintf(stderr, "[function: %s, MPI rank: %i] ", func_name,
+                    mpi_rank);
+        } else { // That'f for normal debug
             fprintf(stderr, "[function: %s] ", func_name);
         }
         vfprintf(stderr, fmt, args);
@@ -22,7 +23,7 @@ void header(void) {
     printf("mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)\n");
     printf("-------------------------------------------------------\n");
     printf("      Problem size     |            |            |    |\n");
-    printf("   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK?|\n");
+    printf("   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |\n");
     printf("-------------------------------------------------------\n");
 }
 

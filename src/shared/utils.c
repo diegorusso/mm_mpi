@@ -7,7 +7,7 @@
 
 // Private function to print the application help
 void _print_usage(char *app_name) {
-    printf("Usage: %s [-h -v] -f filename\n", app_name);
+    printf("Usage: %s [-h -d] -f filename\n", app_name);
 }
 
 // The function parses the arguments passed by CLI
@@ -15,14 +15,14 @@ void parse_arguments(int argc, char **argv, FILE **input_file){
     int option = 0;
     int file_specified = 0;
 
-    while ((option = getopt(argc, argv,"hvf:")) != -1) {
+    while ((option = getopt(argc, argv,"hdf:")) != -1) {
         switch (option) {
             case 'f' : {
                 *input_file = fopen(optarg, "r");  // I need to return this
                 file_specified = 1;
             } break;
-            case 'v' : {
-                verbose = 1;
+            case 'd' : {
+                debug = 1;
             } break;
             case 'h' : {
                 _print_usage(argv[0]);
@@ -53,7 +53,7 @@ double cclock(void) {
     const double    micro = 1.0e-06;    // Conversion constant
     struct timeval  tp;                 // Structure used by gettimeofday
     double          wall_time;          // To hold the result
-    static long     start = 0L, startu;
+    static long     start = 0L, start_micro;
 
     // gettimeofday gives the number of seconds and microseconds since the
     // Epoch
@@ -61,11 +61,12 @@ double cclock(void) {
         wall_time = -1.0e0;
     else if (!start) {
         start = tp.tv_sec;          // seconds
-        startu = tp.tv_usec;        // microseconds
+        start_micro = tp.tv_usec;        // microseconds
         wall_time = 0.0e0;          // reset wall_time
     } else {
         // Let's calculate the wall_time with micro seconds accuracy
-        wall_time = (double)(tp.tv_sec - start) + micro * (tp.tv_usec - startu);
+        wall_time = (double)(tp.tv_sec - start) + micro * \
+                        (tp.tv_usec - start_micro);
     }
     return wall_time;
 }

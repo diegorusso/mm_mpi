@@ -1,4 +1,4 @@
-void verbose_printf(const char* func_name, int mpi_rank, const char* fmt, ...);
+void debug_printf(const char* func_name, int mpi_rank, const char* fmt, ...);
 
 void header(void);
 

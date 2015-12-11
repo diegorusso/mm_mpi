@@ -1,1 +1,1 @@
-extern int verbose;
+extern int debug;
