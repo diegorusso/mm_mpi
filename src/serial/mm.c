@@ -24,6 +24,8 @@ int main(int argc, char **argv) {
     // Parse arguments and return the input file
     parse_arguments(argc, argv, &input_file);
 
+    printf("Executing %s\n", argv[0]);
+
     // Read data from the file
     while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &num_repititions) \
                 != EOF)) {
