@@ -23,7 +23,8 @@ void gendat(int m, int l, int n, double a[][l], double b[][n]){
         for (j = 0; j < n; j++) {
             // I store the multiplicative inverse of a[j][i]
             b[i][j] = 1.0 / (double)(i + 1);
-            debug_printf(__func__, -1, "b[%i][%i] = %G\n", i, j, 1.0 / (double)(i + 1));
+            debug_printf(__func__, -1, "b[%i][%i] = %G\n", i, j,
+                         1.0 / (double)(i + 1));
         }
     }
 }

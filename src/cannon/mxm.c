@@ -116,17 +116,21 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // comm: communicator
     // status: status object
 #if defined NONBLOCKING
-    MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0,
+                         source, 0, comm_2d, &status);
 #else
-    MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0,
+                         comm_2d, &status);
 #endif
 
     // This is the initial alignment of B
     MPI_Cart_shift(comm_2d, 0, -coordinates[1], &source, &destination);
 #if defined NONBLOCKING
-    MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0,
+                         source, 0, comm_2d, &status);
 #else
-    MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0,
+                         comm_2d, &status);
 #endif
 
     for (int i = 0; i < dimensions[0]; i++) {
@@ -135,12 +139,16 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
         mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
 
         // Shift matrix A left by one
-        MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, right, 1, comm_2d, &request_handles[0]);
-        MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, left, 1, comm_2d, &request_handles[1]);
+        MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, right, 1, comm_2d,
+                  &request_handles[0]);
+        MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, left, 1, comm_2d,
+                  &request_handles[1]);
 
         // Shift matrix B up by one
-        MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, down, 1, comm_2d, &request_handles[2]);
-        MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, up, 1, comm_2d, &request_handles[3]);
+        MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, down, 1, comm_2d,
+                  &request_handles[2]);
+        MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, up, 1, comm_2d,
+                  &request_handles[3]);
 
         // Let's wait all the shits/communications to happen
         MPI_Waitall(4, request_handles, status_handles);
@@ -149,27 +157,33 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
         mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a, b, c);
 
         // Shift matrix A left by one
-        MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, left, 1, right, 1, comm_2d, &status);
+        MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, left, 1, right, 1,
+                             comm_2d, &status);
 
         // Shift matrix B up by one
-        MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, up, 1, down, 1, comm_2d, &status);
+        MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, up, 1, down, 1, comm_2d,
+                             &status);
 #endif
     }
 
     // Rearange matrix A
     MPI_Cart_shift(comm_2d, 1, +coordinates[0], &source, &destination);
 #if defined NONBLOCKING
-    MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0,
+                         source, 0, comm_2d, &status);
 #else
-    MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, destination, 0, source, 0,
+                         comm_2d, &status);
 #endif
 
     // Rearange matrix B
     MPI_Cart_shift(comm_2d, 0, +coordinates[1], &source, &destination);
 #if defined NONBLOCKING
-    MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0,
+                         source, 0, comm_2d, &status);
 #else
-    MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0, comm_2d, &status);
+    MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, destination, 0, source, 0,
+                         comm_2d, &status);
 #endif
 
 #if defined NONBLOCKING

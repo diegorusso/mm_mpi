@@ -25,7 +25,8 @@ int main(int argc, char **argv) {
     parse_arguments(argc, argv, &input_file);
 
     // Read data from the file
-    while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &num_repititions) != EOF)) {
+    while ((fscanf(input_file, "%d%d%d%d\n", &m, &l, &n, &num_repititions) \
+                != EOF)) {
         // calloc(): zero-initializes the buffer
         a = calloc(m * l, sizeof(double));
         b = calloc(l * n, sizeof(double));

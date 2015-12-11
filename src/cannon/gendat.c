@@ -70,7 +70,8 @@ void gendat(int m, int l, int n, double *a, double *b) {
     if (rank == 0) printf("Generating data for matrix A[%d x %d]\n", m, l);
     for (i = 0; i < M_DBLOCK; i++) {
         for (j = 0; j < L_DBLOCK; j++) {
-            a[i * L_DBLOCK + j] = (double)((coordinates[1] * L_DBLOCK) + j + 1);
+            a[i * L_DBLOCK + j] = \
+                (double)((coordinates[1] * L_DBLOCK) + j + 1);
             debug_printf(__func__, rank_2d,
                          "A[%i * %i + %i]: %i * %i + %i + 1 = %g\n",
                          i, L_DBLOCK,j, coordinates[1], L_DBLOCK, j,
@@ -83,7 +84,8 @@ void gendat(int m, int l, int n, double *a, double *b) {
     for (i = 0; i < L_DBLOCK; i++) {
         for (j = 0; j < N_DBLOCK; j++) {
             // Multiplicative inverse
-            b[i * N_DBLOCK + j] = 1.0 / (double)((coordinates[0] * L_DBLOCK) + i + 1);
+            b[i * N_DBLOCK + j] = \
+                1.0 / (double)((coordinates[0] * L_DBLOCK) + i + 1);
             debug_printf(__func__, rank_2d,
                          "B[%i * %i + %i]: 1.0 / ((%i * %i) + %i + 1) = %g\n",
                          i, N_DBLOCK, j,  coordinates[0], L_DBLOCK, i,

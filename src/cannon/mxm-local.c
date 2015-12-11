@@ -41,9 +41,11 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
     }
 
 #elif defined OPENMP_NESTED
-#pragma omp parallel for default(shared) private(t,k,j) num_threads(2) schedule(runtime)
+#pragma omp parallel for default(shared) private(t,k,j) num_threads(2) \
+    schedule(runtime)
     for (i = 0; i < m; i++) {
-#pragma omp parallel for default(shared) private(t,j) num_threads(2) schedule(runtime)
+#pragma omp parallel for default(shared) private(t,j) num_threads(2) \
+    schedule(runtime)
         for (k = 0; k < n; k++) {
             t = c[i * n + k];
             for (j = 0; j < l; j++) {
@@ -54,7 +56,8 @@ void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
     }
 
 #elif defined CBLAS
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, l, 1.0, a, l, b, n, 1.0, c, n);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                m, n, l, 1.0, a, l, b, n, 1.0, c, n);
 
 #else
     // This is the normal matrix multiplication
