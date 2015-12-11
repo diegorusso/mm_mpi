@@ -11,10 +11,10 @@
 void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     int     num_processes;
     int     M_DBLOCK, N_DBLOCK, L_DBLOCK, A_DBLOCK, B_DBLOCK;
-    int     rank, rank_2d, coordinates[2];
+    int     rank, rank_2d;
     int     source, destination;
     int     up, down, left, right;
-    int     periods[2], dimensions[2];
+    int     periods[2], dimensions[2], coordinates[2];
 #if defined NONBLOCKING
     // I need these two buffers. Those are arrays of double pointers
     double  *a_buf[2], *b_buf[2];
@@ -70,7 +70,8 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     //         coordinates of specified process
     MPI_Cart_coords(comm_2d, rank_2d, 2, coordinates);
 
-    verbose_printf(__func__, rank_2d, "My coords are: %i, %i\n", coordinates[0], coordinates[1]);
+    debug_printf(__func__, rank_2d, "My coordinates are: %i, %i\n",
+                 coordinates[0], coordinates[1]);
 
     // I split the matrices dimensions in blocks using the square root of the
     // number of processors I have available
