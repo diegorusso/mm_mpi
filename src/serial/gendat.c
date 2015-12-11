@@ -9,21 +9,21 @@ void gendat(int m, int l, int n, double a[][l], double b[][n]){
 
     // That's for A
     printf("Generating data for matrix A[%d x %d]\n", m, l);
-    for (j = 0; j < m; j++) {
-        for (i = 0; i < l; i++) {
-            // I just store i+1
-            a[j][i] = (double)(i + 1);
-            verbose_printf(__func__, -1, "a[%i][%i] = %i + 1\n", j, i, i);
+    for (i = 0; i < m; i++) {
+        for (j = 0; j < l; j++) {
+            // I just store j + 1
+            a[i][j] = (double)(j + 1);
+            debug_printf(__func__, -1, "a[%i][%i] = %i\n", i, j, j + 1);
         }
     }
 
     // That's for B
     printf("Generating data for matrix B[%d x %d]\n", l, n);
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < l; j++) {
+    for (i = 0; i < l; i++) {
+        for (j = 0; j < n; j++) {
             // I store the multiplicative inverse of a[j][i]
-            b[j][i] = 1.0 / (double)(j + 1);
-            verbose_printf(__func__, -1, "b[%i][%i] = 1.0 / (%i + 1)\n", j, i, j);
+            b[i][j] = 1.0 / (double)(i + 1);
+            debug_printf(__func__, -1, "b[%i][%i] = %G\n", i, j, 1.0 / (double)(i + 1));
         }
     }
 }
