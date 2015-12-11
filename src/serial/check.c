@@ -26,7 +26,8 @@ int check(int m, int l, int n, double c[][n]) {
             // number in the system. Ideally the difference should be 0.
             if (fabs(tvalue - c[i][j]) > eps) {
                 printf("Something wrong checking matrix C\n");
-                verbose_printf(__func__, -1, "fabs(%G - %G) > %G\n", tvalue, c[i][j], eps);
+                debug_printf(__func__, -1, "fabs(%G - %G) > %G\n", tvalue,
+                             c[i][j], eps);
                 ok++;
             }
         }
