@@ -15,6 +15,7 @@ void debug_printf(const char* func_name, int mpi_rank, const char* fmt, ...){
         }
         vfprintf(stderr, fmt, args);
         va_end(args);
+        fflush(stderr);
     };
 };
 

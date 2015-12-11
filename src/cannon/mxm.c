@@ -15,12 +15,14 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     int     source, destination;
     int     up, down, left, right;
     int     periods[2], dimensions[2], coordinates[2];
+
 #if defined NONBLOCKING
     // I need these two buffers. Those are arrays of double pointers
     double  *a_buf[2], *b_buf[2];
 
     // Array of requests
     MPI_Request request_handles[4];
+
     // Array of statuses
     MPI_Status  status_handles[4];
 #endif
@@ -102,9 +104,15 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // With these two commands I get the ranks of the left and up shifts
     MPI_Cart_shift(comm_2d, 1, -1, &right, &left);
     MPI_Cart_shift(comm_2d, 0, -1, &down, &up);
+    debug_printf(__func__, rank, "Left rank: %i, Up rank: %i\n", left, up);
 
     // This is the initial alignment of A
     MPI_Cart_shift(comm_2d, 1, -coordinates[0], &source, &destination);
+    debug_printf(__func__, rank,
+                 "Initial matrix alignment for A: shit of %i to %i\n",
+                 -coordinates[0], destination);
+
+#if defined NONBLOCKING
     // Sends and receives using a single buffer
     // buf: initial address of send and receive buffer
     // count: number of elements in send and receive buffer
@@ -115,7 +123,6 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // recvtag: receive message tag
     // comm: communicator
     // status: status object
-#if defined NONBLOCKING
     MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0,
                          source, 0, comm_2d, &status);
 #else
@@ -125,6 +132,10 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
 
     // This is the initial alignment of B
     MPI_Cart_shift(comm_2d, 0, -coordinates[1], &source, &destination);
+    debug_printf(__func__, rank,
+                 "Initial matrix alignment for B: shit of %i to %i\n",
+                 -coordinates[1], destination);
+
 #if defined NONBLOCKING
     MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0,
                          source, 0, comm_2d, &status);
@@ -133,24 +144,52 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
                          comm_2d, &status);
 #endif
 
+    debug_printf(__func__, rank,
+                 "Iterate through %i dimensions\n", dimensions[0]);
     for (int i = 0; i < dimensions[0]; i++) {
 #if defined NONBLOCKING
         // Perform the local matrix multiplication
         mxm_local(M_DBLOCK, L_DBLOCK, N_DBLOCK, a_buf[i % 2], b_buf[i % 2], c);
 
         // Shift matrix A left by one
-        MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, right, 1, comm_2d,
+        // Begins a nonblocking send
+        // buf: initial address of send buffer
+        // count: number of elements in send buffer
+        // datatype: datatype of each send buffer element
+        // dest: rank of destination
+        // tag: message tag
+        // comm: communicator
+        // request: communication request
+        MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, left, 1, comm_2d,
                   &request_handles[0]);
-        MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, left, 1, comm_2d,
+        // Begins a nonblocking receive
+        // buf: initial address of receive buffer
+        // count: number of elements in receive buffer
+        // datatype: datatype of each send buffer element
+        // dest: rank of source
+        // tag: message tag
+        // comm: communicator
+        // request: communication request
+        MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, right, 1, comm_2d,
                   &request_handles[1]);
+        debug_printf(__func__, rank,
+                     "A: Sending data to %i, Receiving data from %i\n",
+                     left, right);
 
         // Shift matrix B up by one
-        MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, down, 1, comm_2d,
+        MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, up, 1, comm_2d,
                   &request_handles[2]);
-        MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, up, 1, comm_2d,
+        MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, down, 1, comm_2d,
                   &request_handles[3]);
+        debug_printf(__func__, rank,
+                     "B: Sending data to %i, Receiving data from %i\n",
+                     up, down);
 
-        // Let's wait all the shits/communications to happen
+        // Let's wait all the shifts/communications to happen
+        // Waits for all given MPI Requests to complete
+        // count: list length
+        // array_of_requests: array of request handles
+        // array_of_statuses: array of status objects
         MPI_Waitall(4, request_handles, status_handles);
 #else
         // Perform the local matrix multiplication
@@ -159,15 +198,25 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
         // Shift matrix A left by one
         MPI_Sendrecv_replace(a, A_DBLOCK, MPI_DOUBLE, left, 1, right, 1,
                              comm_2d, &status);
+        debug_printf(__func__, rank,
+                     "A: Sending data to %i, Receiving data from %i\n",
+                     left, right);
 
         // Shift matrix B up by one
         MPI_Sendrecv_replace(b, B_DBLOCK, MPI_DOUBLE, up, 1, down, 1, comm_2d,
                              &status);
+        debug_printf(__func__, rank,
+                     "B: Sending data to %i, Receiving data from %i\n",
+                     up, down);
 #endif
     }
 
-    // Rearange matrix A
+    // Final matrix alignement for A
     MPI_Cart_shift(comm_2d, 1, +coordinates[0], &source, &destination);
+    debug_printf(__func__, rank,
+                 "Final matrix alignment for A: shit of %i to %i\n",
+                 +coordinates[0], destination);
+
 #if defined NONBLOCKING
     MPI_Sendrecv_replace(a_buf[0], A_DBLOCK, MPI_DOUBLE, destination, 0,
                          source, 0, comm_2d, &status);
@@ -176,8 +225,12 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
                          comm_2d, &status);
 #endif
 
-    // Rearange matrix B
+    // Final matrix alignement for B
     MPI_Cart_shift(comm_2d, 0, +coordinates[1], &source, &destination);
+    debug_printf(__func__, rank,
+                 "Final matrix alignment for B: shit of %i to %i\n",
+                 +coordinates[1], destination);
+
 #if defined NONBLOCKING
     MPI_Sendrecv_replace(b_buf[0], B_DBLOCK, MPI_DOUBLE, destination, 0,
                          source, 0, comm_2d, &status);
