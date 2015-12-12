@@ -5,6 +5,7 @@
 \frenchspacing
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{float}
 \usepackage{hyperref}
 \usepackage{colortbl}
 \usepackage{listings}
@@ -20,11 +21,16 @@
 \usepackage[Bjornstrup]{fncychap}
 \usepackage{subfigure}
 \usepackage{cite}
-
+\usepackage[T1]{fontenc}
+\usepackage{listings}
 
 \author{Diego Russo}
 \title{MM MPI}
 \date{2015-12-22}
+
+\floatstyle{ruled}
+\newfloat{program}{thp}{lop}
+\floatname{program}{Code}
 
 \hypersetup{
 	colorlinks=false,
