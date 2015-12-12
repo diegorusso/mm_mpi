@@ -1,14 +1,189 @@
 \chapter{MM MPI}
-\section{La struttura del codice}
+In questo capitolo viene analizzato tutto quello che riguarda l'implementazione di MM MPI. La struttura del codice, le primitive MPI utilizzate, compilazione, esecuzioni, output dell'applicazione ed infine delle ottimizzazione per migliorare le prestazioni di MM MPI.
+
+\section{Il codice dell'applicazione}
+L'applicazione \`{e} scritta interamente in C ed utilizza la libreria mvapich2. Di seguito la lista dei file.
+
+\begin{lstlisting}
+-rw-r--r-- 1 diego dyn    12 Jul  6 23:41 contributors.txt
+drwxr-xr-x 2 diego dyn  4096 Dec 12 18:12 data
+drwxr-xr-x 3 diego dyn  4096 Dec  5 15:26 doc
+drwxr-xr-x 2 diego dyn  4096 Dec 12 18:51 logs
+-rw-r--r-- 1 diego dyn  2133 Dec  5 15:26 Makefile
+-rw-r--r-- 1 diego dyn   455 Dec  5 18:37 Makefile.mm.dev
+lrwxrwxrwx 1 diego dyn    14 Dec  5 16:10 Makefile.mm.inc -> Makefile.mm.pg
+-rw-r--r-- 1 diego dyn   198 Dec  5 16:18 Makefile.mm.pg
+-rw-r--r-- 1 diego dyn   538 Dec 12 10:58 README
+-rwxr-xr-x 1 diego dyn    27 Dec  5 16:12 run_mm_mpi_dev.sh
+-rwxr-xr-x 1 diego dyn    74 Dec  5 16:43 run_mm_mpi_pg.sh
+drwxr-xr-x 5 diego dyn  4096 Dec  5 15:26 src
+-rwxr-xr-x 1 diego dyn   244 Dec 11 19:38 test.sh
+\end{lstlisting}
+
+La directory \textit{data} contiene i file di input da passare all'applicazione.
+
+La directory \textit{doc} contiene i sorgenti di questa relazione
+
+La directory \textit{src} contiene il codice dell'applicazione con i vari Makefile. Sia il codice che i Makefile verrano spiegati successivamente.
+
+Nella root dell'applicazione ci sono poi vari script per l'esecuzione ed cosa molto importante il README con istruzioni su come compilare ed eseguire.
+
 \subsection{Makefiles}
-\subsection{src/shared}
-\subsection{src/serial}
-\subsection{src/cannon}
+I Makefiles giocano un ruolo molto importante per la compilazione dell'applicazione. Di seguito il Makefile principale che \`{e} responsabile della compilazione delle varie versioni dell'applicazione.
+
+\lstinputlisting{"../../Makefile"}
+
+Ci sono poi dei Makefile secondari, uno per ogni versione dell'applicazione da compilare. Un esempio \`{e} il seguente:
+
+\lstinputlisting{"../../src/cannon/Makefile.cblas"}
+
+che compila la versione cblas di MM MPI. Nella riga 1 c'\`{e} l'inclusione di un altro file. Questo file contiene tutti i parametri per la corretta compilazione e differisce a seconda dell'ambiete di sviluppo. Per compilare ed eseguire MM MPI su un MBP i seguenti parametri sono stati utilizzati:
+
+\lstinputlisting{"../../Makefile.mm.dev"}
+
+Prima della compilazione dunque si deve creare il Makefile con i giusti parametri e poi creare un link simbolico \textit{Makefile.mm.inc}
+
+\subsection{La directory src/}
+Questa directory contiene tre sotto directory dove si possono trovare i file .c e .h che implementano MM MPI. Il codice \`{e} ben documentato con commenti (in inglese), dunque lascio all'utente l'esercizio di aprire i file sorgenti mentre legge la seguente relazione.
+
+\subsubsection{src/shared}
+In \textit{shared} si trovano funzioni che sono indipendenti dall'implementazione (seriale o parallela). Il contenuto \`{e} i seguente:
+
+\begin{lstlisting}
+-rw-r--r-- 1 diego dyn 1730 Dec 11 19:38 format.c
+-rw-r--r-- 1 diego dyn  175 Dec 11 19:38 format.h
+-rw-r--r-- 1 diego dyn  236 Dec 11 19:38 reset.c
+-rw-r--r-- 1 diego dyn   44 Dec  5 15:26 reset.h
+-rw-r--r-- 1 diego dyn   18 Dec 11 19:38 shared.h
+-rw-r--r-- 1 diego dyn 2157 Dec 11 19:38 utils.c
+-rw-r--r-- 1 diego dyn   86 Dec  5 15:26 utils.h
+\end{lstlisting}
+
+\textit{format.c} contiene funzioni accessorie per stampare i risultati sullo stdout e debug sullo stderr.
+
+\textit{reset.c} contiene una funzione per fare il reset di una matrice: tutte le celle della matrice verranno impostate a 0.0.
+
+L'unico contenuto di \textit{shared.h} \`{e} una variabile globale per controllare il debug dell'applicazione.
+
+Infine \textit{utils.c} ha un parser degli argomenti passati da console: help, debug e file di input. C'\`{e} anche funzione per prendere il timestamp, utile per calcolare poi il tempo trascorso per la computazione (utilizzato solo per l'implementazione seriale).
+
+\subsubsection{src/serial}
+\textit{serial} contiene l'implementazione seriale della moltiplicazione. La lista dei file \`{e}:
+
+\begin{lstlisting}
+-rw-r--r-- 1 diego dyn 1476 Dec 11 19:38 check.c
+-rw-r--r-- 1 diego dyn  922 Dec 11 19:38 gendat.c
+-rw-r--r-- 1 diego dyn  322 Dec  5 15:26 Makefile
+-rw-r--r-- 1 diego dyn 2227 Dec 11 19:38 mm.c
+-rw-r--r-- 1 diego dyn  378 Dec  5 15:26 mxm.c
+\end{lstlisting}
+
+\textit{mm.c} contiene il main, dove tutto il flusso di lavoro viene guidato: dal parsing dei parametri passati da console, alla generazione dei dati per poi passare alla moltiplicazione vera e propria per poi concludere al controllo dei risultati, calcolo del tempo passato e la stampa allo stdout dei risultati.
+
+\textit{mxm.c} contiente la vera moltiplicazione tra matrice: questa implementazione \`{e} la versione naive dell'algoritmo. Giusto per completezza, si riporta di seguito il codice:
+
+\begin{lstlisting}
+void mxm(int m, int l, int n, double a[][l], double b[][n],
+         double c[][n]) {
+    int     i, j, k;
+
+    for (i = 0; i < m; i++) {
+        for (j = 0; j < l; j++) {
+            for (k = 0; k < n; k++) {
+                c[i][k] += a[i][j] * b[j][k];
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+Si ricorda che la sua complessit\`{a} \`{e} di $O(n^3)$.
+
+Oltre al Makefile per guidare la compilazione, \textit{check.c} contiene una funzione per verificare se la moltiplicazione \`{e} avvenuta con successo e che abbia prodotto la C con i giusti risultati. Infine \textit{gendat.c} implementa una funzione per generare i dati delle matrici A e B.
+
+Come ultima nota, nella sezione relativa all'esecuzione verr\`{a} spiegato il meccanismo che sta dietro alla generazione dei dati ed al relativo controllo del giusto risultato (che \`{e} uguale sia per l'implementazione seriale, sia per quella parallela).
+
+\subsubsection{src/cannon}
+La directory \textit{cannon} ha molti pi\`{u} file rispetto alla corrispettiva seriale. Questo perch\`{e} sono implementate varie versione ed ottimizzazioni che verrano spiegate dopo.
+
+\begin{lstlisting}
+-rw-r--r-- 1 diego dyn 1374 Dec 11 19:38 check.c
+-rw-r--r-- 1 diego dyn 4149 Dec 11 19:38 gendat.c
+-rw-r--r-- 1 diego dyn  355 Dec  5 15:26 Makefile
+-rw-r--r-- 1 diego dyn  363 Dec  5 15:26 Makefile.cblas
+-rw-r--r-- 1 diego dyn  369 Dec 11 19:38 Makefile.nonblock
+-rw-r--r-- 1 diego dyn  377 Dec 11 19:38 Makefile.nonblock.cblas
+-rw-r--r-- 1 diego dyn  384 Dec 11 19:38 Makefile.nonblock.openmp.inner
+-rw-r--r-- 1 diego dyn  385 Dec 11 19:38 Makefile.nonblock.openmp.middle
+-rw-r--r-- 1 diego dyn  385 Dec 11 19:38 Makefile.nonblock.openmp.nested
+-rw-r--r-- 1 diego dyn  384 Dec 11 19:38 Makefile.nonblock.openmp.outer
+-rw-r--r-- 1 diego dyn  370 Dec  5 15:26 Makefile.openmp.inner
+-rw-r--r-- 1 diego dyn  371 Dec  5 15:26 Makefile.openmp.middle
+-rw-r--r-- 1 diego dyn  371 Dec  5 15:26 Makefile.openmp.nested
+-rw-r--r-- 1 diego dyn  370 Dec  5 15:26 Makefile.openmp.outer
+-rw-r--r-- 1 diego dyn 6178 Dec 11 19:38 mm.c
+-rw-r--r-- 1 diego dyn 9979 Dec 11 19:42 mxm.c
+-rw-r--r-- 1 diego dyn 3824 Dec 11 19:38 mxm-local.c
+-rw-r--r-- 1 diego dyn   70 Dec 11 19:38 mxm-local.h
+\end{lstlisting}
+
+La lunga lista di Makefile serve a compilare queste diverse versioni dell'applicazione.
+
+Come nella versione seriale troviamo sia \textit{check.c}, sia \textit{gendat.c} per\`{o} la loro implementazione \`{e} leggermente diversa. Il controllo viene fatto su un array invece che su un array di array mentre la generazione dei dati avviene utilizzando MPI: ogni nodo \`{e} responsabile di generare il proprio blocco di dati.
+
+\textit{mm.c} ancora \`{e} il principale file dove il main guida tutto il flusso di lavoro: ci sono dei controlli preliminari da effettuare prima di prendere i dati dalla riga di comando. Il principale \`{e} controllare se il numero di processori che ho a disposizione sia un quadrato perfetto: se non lo fosse non potrei partizionare la matrice in blocchi per l'esecuzione parallela. Fatto ci\`{o}, si possono leggere i dati da console e iniziare a generare i dati delle matrici: qui c\'{e} un ulteriore controllo da fare. Si deve essere sicuri che le matrici siano "coperte" totalmente e senza scarti dal numero dei processori disponibili. Una volta passato questo controllo si prosegue alla generazione dei dati, moltiplicazione e controllo dei risultati: da notare che tutti questi passaggi sono effettuati tramite MPI. Se tutto dovesse andare bene, i risultato vengono diretti sullo stdout.
+
+\textit{mxm.c} ha un unico metodo che \'{e} responsabile di effettuare la moltiplicazione parallela sfruttando MPI e l'algoritmo di Cannon. Infatti in questa funzione \`{e} possibile distinguere le varie fasi dello stesso algoritmo.
+Altra cosa da notare \'{e} la "doppia" implementazione: con la macro \textit{\#NONBLOCKING} si implementa un approccio non bloccante utilizzando primitive MPI non bloccanti ed un doppio buffer.
+
+Infine \textit{mxm-local.c} implementa la moltiplicazione (seriale) tra sottoblocchi di matrice: il codice infatti viene eseguito su ogni processo e si occupa di moltiplicare solo i dati locali, indipendentemente dal contenuto degli altri nodi. Questo file inoltre contiene alcune ottimizzazioni per migliorare le prestazioni dell'intero algoritmo: infatti grazie ad alcune macro, si hanno ottimizziazioni OpenMP e CBlas.
+
+\subsection{Primitive MPI utilizzate}
+Per comprendere meglio l'implementazione parallela, si ha qui una lista di primitive utilizzate nell'applicazione. Per ogni primitiva si descrive l'interfaccia e l'utilizzo all'interno del codice.
+
+\subsubsection{MPI\_Init}
+
+\subsubsection{MPI\_Comm\_size}
+
+\subsubsection{MPI\_Comm\_rank}
+
+\subsubsection{MPI\_Barrier}
+
+\subsubsection{MPI\_Wtime}
+
+\subsubsection{MPI\_Reduce}
+
+\subsubsection{MPI\_Cart\_create}
+
+\subsubsection{MPI\_Cart\_coords}
+
+\subsubsection{MPI\_Cart\_shift}
+
+\subsubsection{MPI\_Sendrecv\_replace}
+
+\subsubsection{MPI\_Isend}
+
+\subsubsection{MPI\_IRecv}
+
+\subsubsection{MPI\_Waitall}
+
+\subsubsection{MPI\_Comm\_free}
+
+\subsubsection{MPI\_Finalize}
 
 \section{Compilazione}
+
 \section{Esecuzione}
+Spiegare generazione e check della matrice
+
+\subsubsection{Data file}
+
 \section{Debug output}
+
 \section{Ottimizzazioni}
+
 \subsection{Non blocking}
+
 \subsection{OpenMP}
+
 \subsection{CBLAS}
