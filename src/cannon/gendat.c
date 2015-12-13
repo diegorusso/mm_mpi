@@ -63,13 +63,14 @@ void gendat(int m, int l, int n, double *a, double *b) {
     L_DBLOCK = (int)(l / sqrt(num_processes));
     N_DBLOCK = (int)(n / sqrt(num_processes));
 
-    debug_printf(__func__, rank_2d, "BLOCKS - M: %i L: %i N: %i \n",
+    debug_printf(__func__, rank_2d, "BLOCKS - M: %i L: %i N: %i\n",
                  M_DBLOCK, L_DBLOCK, N_DBLOCK);
 
     // I generate data for matrix A (m x l) represented by an array
     if (rank == 0) printf("Generating data for matrix A[%d x %d]\n", m, l);
     for (i = 0; i < M_DBLOCK; i++) {
         for (j = 0; j < L_DBLOCK; j++) {
+            // I store column number + 1
             a[i * L_DBLOCK + j] = \
                 (double)((coordinates[1] * L_DBLOCK) + j + 1);
             debug_printf(__func__, rank_2d,
@@ -83,7 +84,7 @@ void gendat(int m, int l, int n, double *a, double *b) {
     if (rank == 0) printf("Generating data for matrix B[%d x %d]\n", l, n);
     for (i = 0; i < L_DBLOCK; i++) {
         for (j = 0; j < N_DBLOCK; j++) {
-            // Multiplicative inverse
+            // I store 1 / (row number +1)
             b[i * N_DBLOCK + j] = \
                 1.0 / (double)((coordinates[0] * L_DBLOCK) + i + 1);
             debug_printf(__func__, rank_2d,

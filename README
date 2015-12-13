@@ -7,7 +7,7 @@ $ make
 
 To run
 $ PROC_NAME=x.mm_2D_TYPE
-$ qsub -lnodes=4:ppn=1 -d . -N $PROC_NAME -e logs -o logs -v EXE=$PROC_NAME,DATA=example_data run_mm_mpi_pg.sh
+$ qsub -lnodes=8:ppn=2,mem=9050mb -d . -N $PROC_NAME -e logs -o logs -v EXE=$PROC_NAME,DATA=example_data run_mm_mpi_pg.sh
 
 To check the jobs:
 $ qstats [-f | -a]
