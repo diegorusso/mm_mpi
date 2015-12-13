@@ -5,19 +5,19 @@ In questo capitolo viene analizzato tutto quello che riguarda l'implementazione 
 L'applicazione \`{e} scritta interamente in C ed utilizza la libreria mvapich2. Di seguito la lista dei file.
 
 \begin{lstlisting}
--rw-r--r-- 1 diego dyn    12 Jul  6 23:41 contributors.txt
-drwxr-xr-x 2 diego dyn  4096 Dec 12 18:12 data
-drwxr-xr-x 3 diego dyn  4096 Dec  5 15:26 doc
-drwxr-xr-x 2 diego dyn  4096 Dec 12 18:51 logs
--rw-r--r-- 1 diego dyn  2133 Dec  5 15:26 Makefile
--rw-r--r-- 1 diego dyn   455 Dec  5 18:37 Makefile.mm.dev
-lrwxrwxrwx 1 diego dyn    14 Dec  5 16:10 Makefile.mm.inc -> Makefile.mm.pg
--rw-r--r-- 1 diego dyn   198 Dec  5 16:18 Makefile.mm.pg
--rw-r--r-- 1 diego dyn   538 Dec 12 10:58 README
--rwxr-xr-x 1 diego dyn    27 Dec  5 16:12 run_mm_mpi_dev.sh
--rwxr-xr-x 1 diego dyn    74 Dec  5 16:43 run_mm_mpi_pg.sh
-drwxr-xr-x 5 diego dyn  4096 Dec  5 15:26 src
--rwxr-xr-x 1 diego dyn   244 Dec 11 19:38 test.sh
+contributors.txt
+data
+doc
+logs
+Makefile
+Makefile.mm.dev
+Makefile.mm.inc -> Makefile.mm.pg
+Makefile.mm.pg
+README
+run_mm_mpi_dev.sh
+run_mm_mpi_pg.sh
+src
+test.sh
 \end{lstlisting}
 
 La directory \textit{data} contiene i file di input da passare all'applicazione.
@@ -50,13 +50,13 @@ Questa directory contiene tre sotto directory dove si possono trovare i file .c 
 In \textit{shared} si trovano funzioni che sono indipendenti dall'implementazione (seriale o parallela). Il contenuto \`{e} i seguente:
 
 \begin{lstlisting}
--rw-r--r-- 1 diego dyn 1730 Dec 11 19:38 format.c
--rw-r--r-- 1 diego dyn  175 Dec 11 19:38 format.h
--rw-r--r-- 1 diego dyn  236 Dec 11 19:38 reset.c
--rw-r--r-- 1 diego dyn   44 Dec  5 15:26 reset.h
--rw-r--r-- 1 diego dyn   18 Dec 11 19:38 shared.h
--rw-r--r-- 1 diego dyn 2157 Dec 11 19:38 utils.c
--rw-r--r-- 1 diego dyn   86 Dec  5 15:26 utils.h
+format.c
+format.h
+reset.c
+reset.h
+shared.h
+utils.c
+utils.h
 \end{lstlisting}
 
 \textit{format.c} contiene funzioni accessorie per stampare i risultati sullo stdout e debug sullo stderr.
@@ -71,11 +71,11 @@ Infine \textit{utils.c} ha un parser degli argomenti passati da console: help, d
 \textit{serial} contiene l'implementazione seriale della moltiplicazione. La lista dei file \`{e}:
 
 \begin{lstlisting}
--rw-r--r-- 1 diego dyn 1476 Dec 11 19:38 check.c
--rw-r--r-- 1 diego dyn  922 Dec 11 19:38 gendat.c
--rw-r--r-- 1 diego dyn  322 Dec  5 15:26 Makefile
--rw-r--r-- 1 diego dyn 2227 Dec 11 19:38 mm.c
--rw-r--r-- 1 diego dyn  378 Dec  5 15:26 mxm.c
+check.c
+gendat.c
+Makefile
+mm.c
+mxm.c
 \end{lstlisting}
 
 \textit{mm.c} contiene il main, dove tutto il flusso di lavoro viene guidato: dal parsing dei parametri passati da console, alla generazione dei dati per poi passare alla moltiplicazione vera e propria per poi concludere al controllo dei risultati, calcolo del tempo passato e la stampa allo stdout dei risultati.
@@ -107,24 +107,24 @@ Come ultima nota, nella sezione relativa all'esecuzione verr\`{a} spiegato il me
 La directory \textit{cannon} ha molti pi\`{u} file rispetto alla corrispettiva seriale. Questo perch\`{e} sono implementate varie versione ed ottimizzazioni che verrano spiegate dopo.
 
 \begin{lstlisting}
--rw-r--r-- 1 diego dyn 1374 Dec 11 19:38 check.c
--rw-r--r-- 1 diego dyn 4149 Dec 11 19:38 gendat.c
--rw-r--r-- 1 diego dyn  355 Dec  5 15:26 Makefile
--rw-r--r-- 1 diego dyn  363 Dec  5 15:26 Makefile.cblas
--rw-r--r-- 1 diego dyn  369 Dec 11 19:38 Makefile.nonblock
--rw-r--r-- 1 diego dyn  377 Dec 11 19:38 Makefile.nonblock.cblas
--rw-r--r-- 1 diego dyn  384 Dec 11 19:38 Makefile.nonblock.openmp.inner
--rw-r--r-- 1 diego dyn  385 Dec 11 19:38 Makefile.nonblock.openmp.middle
--rw-r--r-- 1 diego dyn  385 Dec 11 19:38 Makefile.nonblock.openmp.nested
--rw-r--r-- 1 diego dyn  384 Dec 11 19:38 Makefile.nonblock.openmp.outer
--rw-r--r-- 1 diego dyn  370 Dec  5 15:26 Makefile.openmp.inner
--rw-r--r-- 1 diego dyn  371 Dec  5 15:26 Makefile.openmp.middle
--rw-r--r-- 1 diego dyn  371 Dec  5 15:26 Makefile.openmp.nested
--rw-r--r-- 1 diego dyn  370 Dec  5 15:26 Makefile.openmp.outer
--rw-r--r-- 1 diego dyn 6178 Dec 11 19:38 mm.c
--rw-r--r-- 1 diego dyn 9979 Dec 11 19:42 mxm.c
--rw-r--r-- 1 diego dyn 3824 Dec 11 19:38 mxm-local.c
--rw-r--r-- 1 diego dyn   70 Dec 11 19:38 mxm-local.h
+check.c
+gendat.c
+Makefile
+Makefile.cblas
+Makefile.nonblock
+Makefile.nonblock.cblas
+Makefile.nonblock.openmp.inner
+Makefile.nonblock.openmp.middle
+Makefile.nonblock.openmp.nested
+Makefile.nonblock.openmp.outer
+Makefile.openmp.inner
+Makefile.openmp.middle
+Makefile.openmp.nested
+Makefile.openmp.outer
+mm.c
+mxm.c
+mxm-local.c
+mxm-local.h
 \end{lstlisting}
 
 La lunga lista di Makefile serve a compilare queste diverse versioni dell'applicazione.
@@ -193,8 +193,7 @@ Ritorna il tempo trascorso del processo chiamante da un punto arbitrario nel pas
 
 \subsubsection{MPI\_Reduce}
 \begin{lstlisting}
-int MPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-               MPI_Op op, int root, MPI_Comm comm)
+int MPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 \end{lstlisting}
 \begin{itemize}
   \item sendbuf: indirizzo del buffer da inviare
@@ -222,8 +221,7 @@ Si ricorda che se check() ritorna 0, il check \`{e} andato a buon fine. Dunque s
 
 \subsubsection{MPI\_Cart\_create}
 \begin{lstlisting}
-int MPI_Cart_create(MPI_Comm comm_old, int ndims, const int dims[],
-                    const int periods[], int reorder, MPI_Comm *comm_cart)
+int MPI_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm *comm_cart)
 \end{lstlisting}
 \begin{itemize}
   \item comm\_old: comunicatore in input
@@ -251,8 +249,7 @@ Determina le coordinate del process nella topolgia cartesiana dato uno specifico
 
 \subsubsection{MPI\_Cart\_shift}
 \begin{lstlisting}
-int MPI_Cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source,
-                   int *rank_dest)
+int MPI_Cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int *rank_dest)
 \end{lstlisting}
 \begin{itemize}
   \item comm: comunicatore con struttura cartesiana
@@ -266,9 +263,7 @@ Ritorna i sorgenti e destinazioni shiftati data una direzione ed un numero di sh
 
 \subsubsection{MPI\_Sendrecv\_replace}
 \begin{lstlisting}
-int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
-                         int dest, int sendtag, int source, int recvtag,
-                         MPI_Comm comm, MPI_Status *status)
+int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Status *status)
 \end{lstlisting}
 \begin{itemize}
   \item buf: indirizzo iniziale del buffer da inviare e per ricevere (output)
@@ -286,8 +281,7 @@ La funzione invia e riceve dati utilizzando un singolo buffer in maniera bloccan
 
 \subsubsection{MPI\_Isend}
 \begin{lstlisting}
-int MPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag,
-              MPI_Comm comm, MPI_Request *request)
+int MPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
 \end{lstlisting}
 \begin{itemize}
   \item buf: indirizzo del buffer da inviare
@@ -303,8 +297,7 @@ La funzione implementa un invio non bloccante: questo vuol dire che ritorna anch
 
 \subsubsection{MPI\_IRecv}
 \begin{lstlisting}
-int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source,
-              int tag, MPI_Comm comm, MPI_Request *request)
+int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
 \end{lstlisting}
 \begin{itemize}
   \item buf: indirizzo del buffer da ricevere
@@ -320,8 +313,7 @@ La funzione implementa una ricezione non bloccante: questo vuole dire che ritorn
 
 \subsubsection{MPI\_Waitall}
 \begin{lstlisting}
-int MPI_Waitall(int count, MPI_Request array_of_requests[],
-                MPI_Status array_of_statuses[])
+int MPI_Waitall(int count, MPI_Request array_of_requests[], MPI_Status array_of_statuses[])
 \end{lstlisting}
 \begin{itemize}
   \item count: lunghezza della lista
@@ -350,12 +342,301 @@ Termina l'ambiente di esecuzione MPI ed \`{e} presente solo in mm.c, il file res
 
 \section{Compilazione}
 
+La compilazione di MM MPI \`{e} guidata da una serie di Makefile. Prima della compilazione si deve creare il file \textit{Makefile.mm.inc} oppure creare un link simbolico ad uno dei file gi\`{a} presenti.
+Una volta che il file \textit{Makefile.mm.inc} esiste, \`{e} possibile lanciare il comando \textit{make}. Se non si passa nessun argomento, make compiler\`{a} tutte le possibili variazioni di MM MPI: una versione seriale e dodici versioni parallele.
+Se si vuole compilare solo la versione di Cannon non bloccante ottimizzata con cblas, baster\`{a} digitare:
+
+\begin{lstlisting}
+$ make 2D-cannon-nonblock-cblas
+\end{lstlisting}
+
+I binari prodotti inizieranno con \textit{x.mm\_} seguiti dalla implementazione. La lista completa dei binari \`{e}:
+
+\begin{lstlisting}
+$ ls x.mm_*
+x.mm_2D_cannon
+x.mm_2D_cannon_cblas
+x.mm_2D_cannon_nonblock
+x.mm_2D_cannon_nonblock_cblas
+x.mm_2D_cannon_nonblock_openmp_inner
+x.mm_2D_cannon_nonblock_openmp_middle
+x.mm_2D_cannon_nonblock_openmp_nested
+x.mm_2D_cannon_nonblock_openmp_outer
+x.mm_2D_cannon_openmp_inner
+x.mm_2D_cannon_openmp_middle
+x.mm_2D_cannon_openmp_nested
+x.mm_2D_cannon_openmp_outer
+x.mm_serial
+\end{lstlisting}
+
 \section{Esecuzione}
-Spiegare generazione e check della matrice
+
+Prima di spiegare come eseguire MM MPI, \`{e} dovereso spiegare come la generazione dei dati ed il controllo funzionano.
 
 \subsubsection{Data file}
+MM MPI prende in input un file di testo con il seguente formato
+
+\begin{lstlisting}
+$ cat data/4_repititions
+4 4 4 4
+8 8 8 4
+16 16 16 4
+32 32 32 4
+64 64 64 4
+128 128 128 4
+256 256 256 4
+512 512 512 4
+1024 1024 1024 4
+2048 2048 2048 4
+4096 4096 4096 4
+8192 8192 8192 4
+16384 16384 16384 4
+\end{lstlisting}
+
+Il formato del file \`{e} il seguente:
+
+\begin{lstlisting}
+M   L   N   #repitizioni
+\end{lstlisting}
+
+dove la matrice A ha dimensioni MxL, la matrice B ha dimensioni LxN. In questo modo \`{e} sempre possibile effettuare la moltiplicazione. L'ultimo parametro indica il numero di volte che la moltiplicazione deve essere effettuata senza rigenerare i dati. Nell'esempio precedente vediamo che tutte le matrici generate sono quadrate di dimensione n e che la moltiplicazione verr\`{a} ripetuta 4 volte.
+La ripetizione \`{e} molto importante soprattutto quando si vogliono collezionare dati e si vuole attenuare eventuale rumore durante gli esperimenti.
+
+\subsubsection{Generazione delle matrici A e B}
+
+Le matrici A e B vengono generate come nella figura \ref{fig:matrix_gen}. Sia A sia B sono matrici quadrate di dimensioni 4.
+
+La matrice A ha tutte le righe uguali ed ogni cella ha il valore dell'i-esima colonna +1. L'ultima colonna contiene sempre il valore di L nel file precedente.
+
+La matrice B invece ha tutte le colonne uguali ed ogni cella contiene numero dell'i-esima riga + 1 che divide 1 ($\frac{1}{i+1}$). La prima riga ha sempre 1 mentre l'ultima riga contiene sempre $\frac{1}{N}$
+
+\begin{figure}[htbp]
+    \begin{center}
+        \includegraphics[width=8cm]{immagini/matrix_gen.png}
+    \end{center}
+    \caption{Generazione delle matrici A e B}
+    \label{fig:matrix_gen}
+\end{figure}
+
+La generazione delle matrici parallele \`{e} un po' pi\`{u} complessa perch\`{e} le matrici sono rappresentate in un array e distribuite su diversi nodi.
+Per quanto riguarda la matrice A:
+
+\begin{lstlisting}
+a[i * L_DBLOCK + j] = (double)((coordinates[1] * L_DBLOCK) + j + 1);
+\end{lstlisting}
+
+\begin{itemize}
+  \item i: valore nel M\_DBLOCK
+  \item j: valore nel L\_DBLOCK
+  \item L\_DBLOCK: larghezza del blocco L
+  \item coordinates[1]: valore della colonna nelle coordinate cartesiane
+\end{itemize}
+
+Per quanto riguarda la matrice B:
+
+\begin{lstlisting}
+b[i * N_DBLOCK + j] = 1.0 / (double)((coordinates[0] * L_DBLOCK) + i + 1);
+\end{lstlisting}
+
+\begin{itemize}
+  \item i: valore nel L\_DBLOCK
+  \item j: valore nel N\_DBLOCK
+  \item N\_DBLOCK: larghezza del blocco N
+  \item coordinates[0]: valore della riga nelle coordinate cartesiane
+\end{itemize}
+
+\subsubsection{Controllo della matrice finale}
+
+Le matrici cos\`{i} generate producono un risultato prevedibile come mostrato in figura \ref{fig:matrix_gen_multiplication}. Il risultato oltre che prevedibile \`{e} anche facile da verificare. La matrice C infatti avr\`{a} in ogni cella il valore L.
+
+\begin{figure}[htbp]
+    \begin{center}
+        \includegraphics[width=10cm]{immagini/matrix_gen_multiplication.png}
+    \end{center}
+    \caption{Moltiplicazione delle matrici A e B}
+    \label{fig:matrix_gen_multiplication}
+\end{figure}
+
+Ora si hanno tutti gli elementi per eseguire l'applicazione.
+
+\subsubsection{Esecuzione seriale}
+
+La versione seriale \`{e} la pi\`{u} semplice da eseguire.
+
+\begin{lstlisting}
+./x.mm_serial -f data/demo_data
+\end{lstlisting}
+
+Dove \textit{demo\_data} \`{e} il file contenente le informazioni per effettuare la moltiplicazione.
+
+\subsubsection{Esecuzione parallela su singola macchina}
+
+Se si vuole testare la versione MPI senza avere a disposizione il cluster, lo si pu\`{o} fare attraverso \textit{mpirun}
+
+\begin{lstlisting}
+mpirun -n 16 ./x.mm_2D_cannon -f data/demo_data
+\end{lstlisting}
+
+In questo caso sto eseguendo la versione standard di Cannon utilizzando 16 processi.
+
+\subsubsection{Esecuzione parallela su cluster}
+
+L'esecuzione sul cluster \`{e} leggermente un pochino pi\`{u} complessa rispetto alle altre.
+
+\begin{lstlisting}
+$ PROC_NAME=x.mm_2D_cannon
+$ qsub -lnodes=8:ppn=2,mem=9050mb -d . -N $PROC_NAME -e logs -o logs -v EXE=$PROC_NAME,DATA=example_data run_mm_mpi_pg.sh
+\end{lstlisting}
+
+Il job \`{e} sottomesso utilizzando qsub specificando che si ha bisogno di 8 nodi con 2 processori e un utilizzo totale di 9GB di memoria.\textit{-d} specifica l'area di lavoro, \textit{-N} il nome del processo, \textit{-e/-o} la directory dove i log verranno memorizzati ed infine \textit{-v} specifica la lista di variabili da passare allo script \textit{run\_mm\_mpi\_pg.sh} che le utilizzer\`{a} per eseguire MM MPI.
+
+\lstinputlisting{"../../run_mm_mpi_pg.sh"}
+
+Notare che le variabili \textit{\$PBS\_NODEFILE} \textit{\$PBS\_NP} sono impostate in automatico da Torque.
 
 \section{Debug output}
+
+Il debug dell'applicazione puo\`{o} essere attivato attraverso l'opzione "-d". Il debug sar\`{a} differente a seconda della versione seriale e parallela: la versione parallela ha informazioni addizionali quali il rank del processo, le inforamzioni relative alla topologia cartesiana ed ai relativi shift.
+
+\begin{lstlisting}
+[diego@cgcw mm_mpi]$ ./x.mm_serial -f data/demo_data  -d
+Executing ./x.mm_serial
+Generating data for matrix A[4 x 4]
+[function: gendat] a[0][0] = 1
+[function: gendat] a[0][1] = 2
+[function: gendat] a[0][2] = 3
+[function: gendat] a[0][3] = 4
+[function: gendat] a[1][0] = 1
+[function: gendat] a[1][1] = 2
+[function: gendat] a[1][2] = 3
+[function: gendat] a[1][3] = 4
+[function: gendat] a[2][0] = 1
+[function: gendat] a[2][1] = 2
+[function: gendat] a[2][2] = 3
+[function: gendat] a[2][3] = 4
+[function: gendat] a[3][0] = 1
+[function: gendat] a[3][1] = 2
+[function: gendat] a[3][2] = 3
+[function: gendat] a[3][3] = 4
+Generating data for matrix B[4 x 4]
+[function: gendat] b[0][0] = 1
+[function: gendat] b[0][1] = 1
+[function: gendat] b[0][2] = 1
+[function: gendat] b[0][3] = 1
+[function: gendat] b[1][0] = 0.5
+[function: gendat] b[1][1] = 0.5
+[function: gendat] b[1][2] = 0.5
+[function: gendat] b[1][3] = 0.5
+[function: gendat] b[2][0] = 0.333333
+[function: gendat] b[2][1] = 0.333333
+[function: gendat] b[2][2] = 0.333333
+[function: gendat] b[2][3] = 0.333333
+[function: gendat] b[3][0] = 0.25
+[function: gendat] b[3][1] = 0.25
+[function: gendat] b[3][2] = 0.25
+[function: gendat] b[3][3] = 0.25
+Matrix C will be [4 x 4]
+Let's do the math (1 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+      4|      4|      4|      0.0000|  4.2667e-02|  T |
+-------------------------------------------------------
+\end{lstlisting}
+
+L'output fornisce tutte le informazioni necessare per eseguire il debug dell'applicazione.
+Per quanto riguarda l'esecuzione su cluster il debug viene rediretto su stderr, dunque contenuto nel file di errore.
+
+\begin{lstlisting}
+[function: gendat, MPI rank: 0] My coordinates are: 0, 0
+[function: gendat, MPI rank: 0] BLOCKS - M: 2 L: 2 N: 2
+[function: gendat, MPI rank: 0] A[0 * 2 + 0]: 0 * 2 + 0 + 1 = 1
+[function: gendat, MPI rank: 0] A[0 * 2 + 1]: 0 * 2 + 1 + 1 = 2
+[function: gendat, MPI rank: 0] A[1 * 2 + 0]: 0 * 2 + 0 + 1 = 1
+[function: gendat, MPI rank: 0] A[1 * 2 + 1]: 0 * 2 + 1 + 1 = 2
+[function: gendat, MPI rank: 0] B[0 * 2 + 0]: 1.0 / ((0 * 2) + 0 + 1) = 1
+[function: gendat, MPI rank: 0] B[0 * 2 + 1]: 1.0 / ((0 * 2) + 0 + 1) = 1
+[function: gendat, MPI rank: 0] B[1 * 2 + 0]: 1.0 / ((0 * 2) + 1 + 1) = 0.5
+[function: gendat, MPI rank: 0] B[1 * 2 + 1]: 1.0 / ((0 * 2) + 1 + 1) = 0.5
+[function: mxm, MPI rank: 0] My coordinates are: 0, 0
+[function: mxm, MPI rank: 0] Left rank: 1, Up rank: 2
+[function: mxm, MPI rank: 0] Initial matrix alignment for A: shit of 0 to 0
+[function: gendat, MPI rank: 1] My coordinates are: 0, 1
+[function: gendat, MPI rank: 1] BLOCKS - M: 2 L: 2 N: 2
+[function: gendat, MPI rank: 1] A[0 * 2 + 0]: 1 * 2 + 0 + 1 = 3
+[function: gendat, MPI rank: 1] A[0 * 2 + 1]: 1 * 2 + 1 + 1 = 4
+[function: gendat, MPI rank: 1] A[1 * 2 + 0]: 1 * 2 + 0 + 1 = 3
+[function: gendat, MPI rank: 1] A[1 * 2 + 1]: 1 * 2 + 1 + 1 = 4
+[function: gendat, MPI rank: 1] B[0 * 2 + 0]: 1.0 / ((0 * 2) + 0 + 1) = 1
+[function: gendat, MPI rank: 1] B[0 * 2 + 1]: 1.0 / ((0 * 2) + 0 + 1) = 1
+[function: gendat, MPI rank: 1] B[1 * 2 + 0]: 1.0 / ((0 * 2) + 1 + 1) = 0.5
+[function: gendat, MPI rank: 1] B[1 * 2 + 1]: 1.0 / ((0 * 2) + 1 + 1) = 0.5
+[function: mxm, MPI rank: 1] My coordinates are: 0, 1
+[function: mxm, MPI rank: 1] Left rank: 0, Up rank: 3
+[function: mxm, MPI rank: 1] Initial matrix alignment for A: shit of 0 to 1
+[function: gendat, MPI rank: 2] My coordinates are: 1, 0
+[function: gendat, MPI rank: 2] BLOCKS - M: 2 L: 2 N: 2
+[function: gendat, MPI rank: 2] A[0 * 2 + 0]: 0 * 2 + 0 + 1 = 1
+[function: gendat, MPI rank: 2] A[0 * 2 + 1]: 0 * 2 + 1 + 1 = 2
+[function: gendat, MPI rank: 2] A[1 * 2 + 0]: 0 * 2 + 0 + 1 = 1
+[function: gendat, MPI rank: 2] A[1 * 2 + 1]: 0 * 2 + 1 + 1 = 2
+[function: gendat, MPI rank: 2] B[0 * 2 + 0]: 1.0 / ((1 * 2) + 0 + 1) = 0.333333
+[function: gendat, MPI rank: 2] B[0 * 2 + 1]: 1.0 / ((1 * 2) + 0 + 1) = 0.333333
+[function: gendat, MPI rank: 2] B[1 * 2 + 0]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
+[function: gendat, MPI rank: 2] B[1 * 2 + 1]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
+[function: mxm, MPI rank: 2] My coordinates are: 1, 0
+[function: mxm, MPI rank: 2] Left rank: 3, Up rank: 0
+[function: mxm, MPI rank: 2] Initial matrix alignment for A: shit of -1 to 3
+[function: gendat, MPI rank: 3] My coordinates are: 1, 1
+[function: gendat, MPI rank: 3] BLOCKS - M: 2 L: 2 N: 2
+[function: gendat, MPI rank: 3] A[0 * 2 + 0]: 1 * 2 + 0 + 1 = 3
+[function: gendat, MPI rank: 3] A[0 * 2 + 1]: 1 * 2 + 1 + 1 = 4
+[function: gendat, MPI rank: 3] A[1 * 2 + 0]: 1 * 2 + 0 + 1 = 3
+[function: gendat, MPI rank: 3] A[1 * 2 + 1]: 1 * 2 + 1 + 1 = 4
+[function: gendat, MPI rank: 3] B[0 * 2 + 0]: 1.0 / ((1 * 2) + 0 + 1) = 0.333333
+[function: gendat, MPI rank: 3] B[0 * 2 + 1]: 1.0 / ((1 * 2) + 0 + 1) = 0.333333
+[function: gendat, MPI rank: 3] B[1 * 2 + 0]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
+[function: gendat, MPI rank: 3] B[1 * 2 + 1]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
+[function: mxm, MPI rank: 0] Initial matrix alignment for B: shit of 0 to 0
+[function: mxm, MPI rank: 0] Iterate through 2 dimensions
+[function: mxm, MPI rank: 1] Initial matrix alignment for B: shit of -1 to 3
+[function: mxm, MPI rank: 3] My coordinates are: 1, 1
+[function: mxm, MPI rank: 3] Left rank: 2, Up rank: 1
+[function: mxm, MPI rank: 3] Initial matrix alignment for A: shit of -1 to 2
+[function: mxm, MPI rank: 1] Iterate through 2 dimensions
+[function: mxm, MPI rank: 1] A: Sending data to 0, Receiving data from 0
+[function: mxm, MPI rank: 1] B: Sending data to 3, Receiving data from 3
+[function: mxm, MPI rank: 2] Initial matrix alignment for B: shit of 0 to 2
+[function: mxm, MPI rank: 2] Iterate through 2 dimensions
+[function: mxm, MPI rank: 2] A: Sending data to 3, Receiving data from 3
+[function: mxm, MPI rank: 3] Initial matrix alignment for B: shit of -1 to 1
+[function: mxm, MPI rank: 3] Iterate through 2 dimensions
+[function: mxm, MPI rank: 3] A: Sending data to 2, Receiving data from 2
+[function: mxm, MPI rank: 0] A: Sending data to 1, Receiving data from 1
+[function: mxm, MPI rank: 0] B: Sending data to 2, Receiving data from 2
+[function: mxm, MPI rank: 0] A: Sending data to 1, Receiving data from 1
+[function: mxm, MPI rank: 2] B: Sending data to 0, Receiving data from 0
+[function: mxm, MPI rank: 1] A: Sending data to 0, Receiving data from 0
+[function: mxm, MPI rank: 1] B: Sending data to 3, Receiving data from 3
+[function: mxm, MPI rank: 1] Final matrix alignment for A: shit of 0 to 1
+[function: mxm, MPI rank: 1] Final matrix alignment for B: shit of 1 to 3
+[function: mxm, MPI rank: 2] A: Sending data to 3, Receiving data from 3
+[function: mxm, MPI rank: 2] B: Sending data to 0, Receiving data from 0
+[function: mxm, MPI rank: 2] Final matrix alignment for A: shit of 1 to 3
+[function: mxm, MPI rank: 2] Final matrix alignment for B: shit of 0 to 2
+[function: mxm, MPI rank: 3] B: Sending data to 1, Receiving data from 1
+[function: mxm, MPI rank: 3] A: Sending data to 2, Receiving data from 2
+[function: mxm, MPI rank: 3] B: Sending data to 1, Receiving data from 1
+[function: mxm, MPI rank: 3] Final matrix alignment for A: shit of 1 to 2
+[function: mxm, MPI rank: 3] Final matrix alignment for B: shit of 1 to 1
+[function: mxm, MPI rank: 0] B: Sending data to 2, Receiving data from 2
+[function: mxm, MPI rank: 0] Final matrix alignment for A: shit of 0 to 0
+[function: mxm, MPI rank: 0] Final matrix alignment for B: shit of 0 to 0
+\end{lstlisting}
+
+La prima cosa che si nota \`{e} la verbosit\`{e} del debug. La versione parallela contiene molte pi\`{u} informazioni rispetto alla corrispettiva parallela. Altra cosa da notare \`{e} la non linearit\`{a} delle informazioni che si hanno: MPI esegue codice su diversi nodi/macchine e non assicura ovviamente un'esecuzione perfettamente sincronizzata.
 
 \section{Ottimizzazioni}
 
