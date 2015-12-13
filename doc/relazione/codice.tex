@@ -133,7 +133,7 @@ Come nella versione seriale troviamo sia \textit{check.c}, sia \textit{gendat.c}
 
 \textit{mm.c} ancora \`{e} il principale file dove il main guida tutto il flusso di lavoro: ci sono dei controlli preliminari da effettuare prima di prendere i dati dalla riga di comando. Il principale \`{e} controllare se il numero di processori che ho a disposizione sia un quadrato perfetto: se non lo fosse non potrei partizionare la matrice in blocchi per l'esecuzione parallela. Fatto ci\`{o}, si possono leggere i dati da console e iniziare a generare i dati delle matrici: qui c\'{e} un ulteriore controllo da fare. Si deve essere sicuri che le matrici siano "coperte" totalmente e senza scarti dal numero dei processori disponibili. Una volta passato questo controllo si prosegue alla generazione dei dati, moltiplicazione e controllo dei risultati: da notare che tutti questi passaggi sono effettuati tramite MPI. Se tutto dovesse andare bene, i risultato vengono diretti sullo stdout.
 
-\textit{mxm.c} ha un unico metodo che \'{e} responsabile di effettuare la moltiplicazione parallela sfruttando MPI e l'algoritmo di Cannon. Infatti in questa funzione \`{e} possibile distinguere le varie fasi dello stesso algoritmo.
+\textit{mxm.c} ha un'unica funzione che \'{e} responsabile di effettuare la moltiplicazione parallela sfruttando MPI e l'algoritmo di Cannon. Infatti in questa funzione \`{e} possibile distinguere le varie fasi dello stesso algoritmo.
 Altra cosa da notare \'{e} la "doppia" implementazione: con la macro \textit{\#NONBLOCKING} si implementa un approccio non bloccante utilizzando primitive MPI non bloccanti ed un doppio buffer.
 
 Infine \textit{mxm-local.c} implementa la moltiplicazione (seriale) tra sottoblocchi di matrice: il codice infatti viene eseguito su ogni processo e si occupa di moltiplicare solo i dati locali, indipendentemente dal contenuto degli altri nodi. Questo file inoltre contiene alcune ottimizzazioni per migliorare le prestazioni dell'intero algoritmo: infatti grazie ad alcune macro, si hanno ottimizziazioni OpenMP e CBlas.
@@ -142,34 +142,211 @@ Infine \textit{mxm-local.c} implementa la moltiplicazione (seriale) tra sottoblo
 Per comprendere meglio l'implementazione parallela, si ha qui una lista di primitive utilizzate nell'applicazione. Per ogni primitiva si descrive l'interfaccia e l'utilizzo all'interno del codice.
 
 \subsubsection{MPI\_Init}
+\begin{lstlisting}
+int MPI_Init( int *argc, char ***argv )
+\end{lstlisting}
+\begin{itemize}
+  \item argc: puntatore al numero di argomenti
+  \item argv: puntatore al vettore di argomenti
+\end{itemize}
+
+\textit{MPI\_Init} deve essere la prima istruzione ad essere chiamata prima di qualsiasi altra istruzione MPI. Si trova nel file \textit{mm.c} subito dopo le dichiarazioni di variabili. l'API \`{e}:
 
 \subsubsection{MPI\_Comm\_size}
+\begin{lstlisting}
+int MPI_Comm_size( MPI_Comm comm, int *size )
+\end{lstlisting}
+\begin{itemize}
+  \item comm: comunicatore MPI
+  \item size: numero di processi nel gruppo del comunicatore (output)
+\end{itemize}
+
+\textit{MPI\_Comm\_size} determina la grandezza del gruppo associato al comunicatore. Si trova su 3 file: gendat.c, mm.c e mxm.c. Questo perch\`{e} tutti e tre i file hanno a che fare con operazioni MPI.
 
 \subsubsection{MPI\_Comm\_rank}
+\begin{lstlisting}
+int MPI_Comm_rank( MPI_Comm comm, int *rank )
+\end{lstlisting}
+\begin{itemize}
+  \item comm: comunicatore MPI
+  \item rank: rank del processo chiamante nel gruppo del comunicatore (output)
+\end{itemize}
+
+Determina il rank del processo chiamante nel comunicatore. Come nel caso precedente, si trova su 3 file: gendat.c, mxm.c e mm.c. Sui primi due file \`{e} replicato due volte perch\`{e} vengono utilizzati due diversi comunicatori: quello generico (MPI\_COMM\_WORLD) ed un altro comunicatore con una topologia cartesiana, utilizzato per implementare l'algoritmo di Cannon.
 
 \subsubsection{MPI\_Barrier}
+\begin{lstlisting}
+int MPI_Barrier( MPI_Comm comm )
+\end{lstlisting}
+\begin{itemize}
+  \item comm: comunicatore
+\end{itemize}
+
+Blocca finch\`{e} tutti i processi nel comunicatore hanno raggiunto questa routine. Si trova solo sul file mm ed \`{e} utilizzato per sincronizzare i vari step dell'applicazione.
 
 \subsubsection{MPI\_Wtime}
+\begin{lstlisting}
+double MPI_Wtime( void )
+\end{lstlisting}
+
+Ritorna il tempo trascorso del processo chiamante da un punto arbitrario nel passato. \`{E} utilizzato in mm.c per prendere il tempo prima e dopo la moltiplicazione parallela per poi calcolare il tempo trascorso.
 
 \subsubsection{MPI\_Reduce}
+\begin{lstlisting}
+int MPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+               MPI_Op op, int root, MPI_Comm comm)
+\end{lstlisting}
+\begin{itemize}
+  \item sendbuf: indirizzo del buffer da inviare
+  \item recvbuf: indirizzo del buffer di ricezione, rilevante solo al processo root (output)
+  \item count: numero di elementi in sendbuffer
+  \item datatype: tipo di dati in sendbuf
+  \item op: operazione di riduzione
+  \item root: rank del processo root
+  \item comm: comunicatore
+\end{itemize}
+
+La funzione \`{e} presente in mm.c e serve a ridurre gli output della funzione check() distribuiti tra i nodi ad un solo valore. La funzione \`{e} cos\`{i} chiamata:
+
+\begin{lstlisting}
+MPI_Reduce(&local_check,   // Indirizzo del buffer da inviare
+           &ok,            // Indirizzo del buffer ricevente
+           1,              // Numero di elementi
+           MPI_INTEGER,    // Tipologia di elementi
+           MPI_SUM,        // L'operazione da effettuare (somma)
+           0,              // Rank del processo root
+           MPI_COMM_WORLD);// Comunicatore
+\end{lstlisting}
+
+Si ricorda che se check() ritorna 0, il check \`{e} andato a buon fine. Dunque si sommano tutti i check distribuiti e si memorizzano in "ok". Questa variabile verr\`{a} controllata in seguito per verificare se la moltiplicazione ha avuto successo.
 
 \subsubsection{MPI\_Cart\_create}
+\begin{lstlisting}
+int MPI_Cart_create(MPI_Comm comm_old, int ndims, const int dims[],
+                    const int periods[], int reorder, MPI_Comm *comm_cart)
+\end{lstlisting}
+\begin{itemize}
+  \item comm\_old: comunicatore in input
+  \item ndims: numero di dimensioni della griglia cartesiana
+  \item dims: array di ndims interi per specificare il numero di processi in ogni dimensione
+  \item periods: array di ndims valori per specificare se la griglia \`{e} peiodica (true) o meno (false) in ogni dimensione
+  \item reorder: il ranking pu\`{o} essere riordinato o meno
+  \item comm\_cart: comunicatore con la nuova topologia cartesiana
+\end{itemize}
+
+La funzione \`{e} utilizzata per creare un comunicatore con topologia cartesiana ed \`{e} presente sia in gendat.c che in mxm.c. L'unica differenza tra le due chiamate \`{e} che in gendat.c non si ha bisogno della periodicit\`{a} della griglia mentre in mxm.c si: questo perch\`{e} in mxm.c la griglia deve essere shiftata con wraparound, proprio come l'algoritmo di Cannon.
 
 \subsubsection{MPI\_Cart\_coords}
+\begin{lstlisting}
+int MPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[])
+\end{lstlisting}
+\begin{itemize}
+  \item comm: comunicatore
+  \item rank: rank del processo nel gruppo di comm
+  \item maxdims: lunghezza del vettore coords
+  \item coords: array di interi (lunghezza di ndims) contenente le coordinate cartesiane del processo specificato (output)
+\end{itemize}
+
+Determina le coordinate del process nella topolgia cartesiana dato uno specifico rank nel gruppo. \`{E} utilizzata sia in gendat.c, sia in mxm.c: le coordinate sono fondamentali per capire la posizione virtuale del blocco di dati nello spazio cartesiano.
 
 \subsubsection{MPI\_Cart\_shift}
+\begin{lstlisting}
+int MPI_Cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source,
+                   int *rank_dest)
+\end{lstlisting}
+\begin{itemize}
+  \item comm: comunicatore con struttura cartesiana
+  \item direction: la coordinata della dimensione da shiftare
+  \item disp: movimento (> 0: shift in alto, < 0 shift in basso)
+  \item rank\_source: rank del processo sorgente (output)
+  \item rank\_dest: rank del processo destinazione (output)
+\end{itemize}
+
+Ritorna i sorgenti e destinazioni shiftati data una direzione ed un numero di shift. La funzione \`{e} utilizzata solo in mxm.c, ovvero il file dove l'algoritmo di Cannon \`{e} implementato: necessito di questa primitiva per effettuare l'allineamento iniziale e finale.
 
 \subsubsection{MPI\_Sendrecv\_replace}
+\begin{lstlisting}
+int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
+                         int dest, int sendtag, int source, int recvtag,
+                         MPI_Comm comm, MPI_Status *status)
+\end{lstlisting}
+\begin{itemize}
+  \item buf: indirizzo iniziale del buffer da inviare e per ricevere (output)
+  \item count: numero di elementi nel buffer
+  \item datatype: tipo di elementi nel buffer
+  \item dest: rank di destinazione
+  \item sendtag: tag per il messaggio da inviare
+  \item source: rank sorgennte
+  \item recvtag: tag per il messaggio da ricevere
+  \item comm: comunicatore
+  \item status: oggetto status (output)
+\end{itemize}
+
+La funzione invia e riceve dati utilizzando un singolo buffer in maniera bloccante. \`{E} presente solo in mxm.c ed invia/riceve blocchi di matrice ai/dai blocchi adiacenti per implementare l'algoritmo di Cannon utilizzando il comunicatore con topologia cartesiana.
 
 \subsubsection{MPI\_Isend}
+\begin{lstlisting}
+int MPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag,
+              MPI_Comm comm, MPI_Request *request)
+\end{lstlisting}
+\begin{itemize}
+  \item buf: indirizzo del buffer da inviare
+  \item count: numero di elementi contenuti nel buffer
+  \item datatype: tipo di dati contenuti nel buffer
+  \item dest: rank di destinazione
+  \item tag: tag del messaggio
+  \item comm: comunicatore
+  \item request: richiesta di comunicazione (output)
+\end{itemize}
+
+La funzione implementa un invio non bloccante: questo vuol dire che ritorna anche se il messaggio non \`{e} stato inviato. \`{E} utilizzata in mxm.c nella versione non bloccante utilizzando un doppio buffer.
 
 \subsubsection{MPI\_IRecv}
+\begin{lstlisting}
+int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source,
+              int tag, MPI_Comm comm, MPI_Request *request)
+\end{lstlisting}
+\begin{itemize}
+  \item buf: indirizzo del buffer da ricevere
+  \item count: numero di elementi contenuti nel buffer
+  \item datatype: tipo di dati contenuti nel buffer
+  \item dest: rank sorgente
+  \item tag: tag del messaggio
+  \item comm: comunicatore
+  \item request: richiesta di comunicazione (output)
+\end{itemize}
+
+La funzione implementa una ricezione non bloccante: questo vuole dire che ritorna anche sel il messaggio non \`{e} stato ricevuto. \`{E} utilizzato in mxm.c nella versione non bloccante utilizzando un doppio buffer.
 
 \subsubsection{MPI\_Waitall}
+\begin{lstlisting}
+int MPI_Waitall(int count, MPI_Request array_of_requests[],
+                MPI_Status array_of_statuses[])
+\end{lstlisting}
+\begin{itemize}
+  \item count: lunghezza della lista
+  \item array\_of\_requests: array di richieste
+  \item array\_of\_statuses: array di status (output)
+\end{itemize}
+
+La funzione aspetta che tutte le request passate abbiano terminato. La primitiva \`{e} utilizzata in mxm.c nella versione non bloccante e serve per bloccare l'esecuzione fino a che ogni gli shift a sinistra ed in alto abbiano finito.
 
 \subsubsection{MPI\_Comm\_free}
+\begin{lstlisting}
+int MPI_Comm_free(MPI_Comm *comm)
+\end{lstlisting}
+\begin{itemize}
+  \item comm: comunicatore
+\end{itemize}
+
+La primitiva marca il comunicatore pronto per essere deallocato. Questo significa che il comunicatore non \`{e} pi\`{u} necessario. Presente sia in gendat.c ed mxm.c per deallocare il comunicatore con topologia cartesiana.
 
 \subsubsection{MPI\_Finalize}
+\begin{lstlisting}
+int MPI_Finalize( void )
+\end{lstlisting}
+
+Termina l'ambiente di esecuzione MPI ed \`{e} presente solo in mm.c, il file responsabile del setup dell'ambiente MPI. Dopo questa primitiva nessun comando MPI pu\`{o} essere chiamato a meno che un altro ambiente MPI sia configurato.
 
 \section{Compilazione}
 
