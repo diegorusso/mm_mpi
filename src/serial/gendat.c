@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "format.h"
 
-// This method generates matrix 'A' and 'B' for the matrix-matrix
+// This function generates matrix 'A' and 'B' for the matrix-matrix
 // multiplication 'C = AB'.
 void gendat(int m, int l, int n, double a[][l], double b[][n]){
     int i, j;

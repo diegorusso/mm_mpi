@@ -2,8 +2,8 @@
 #include "cblas.h"
 #endif
 
-// The method performs the actual multiplication between A and B storing data
-// in C. This method will be executed on every MPI node with local data.
+// The function performs the actual multiplication between A and B storing data
+// in C. This function will be executed on every MPI node with local data.
 // It has few optimizations with OpenMP and CBlas
 void mxm_local(int m, int l, int n, double *a, double *b, double *c) {
     int     i, j, k;

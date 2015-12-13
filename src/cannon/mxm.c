@@ -5,8 +5,8 @@
 #include "format.h"
 #include "mxm-local.h"
 
-// This method performs the actual multiplication between matrix A and B
-// storing data in C. The method accepts in input the dimensions, three
+// This function performs the actual multiplication between matrix A and B
+// storing data in C. The function accepts in input the dimensions, three
 // pointers for the matrices and the MPI communicator (MPI_COMM_WORLD)
 void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     int     i;

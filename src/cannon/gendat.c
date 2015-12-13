@@ -3,7 +3,7 @@
 #include <mpi.h>
 #include "format.h"
 
-// This method generates matrix A and B. Matrices are just vector of doubles
+// This function generates matrix A and B. Matrices are just vector of doubles
 // split in blocks
 void gendat(int m, int l, int n, double *a, double *b) {
     int     i, j;
