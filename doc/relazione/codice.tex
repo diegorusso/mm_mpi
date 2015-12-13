@@ -640,8 +640,96 @@ La prima cosa che si nota \`{e} la verbosit\`{e} del debug. La versione parallel
 
 \section{Ottimizzazioni}
 
-\subsection{Non blocking}
+MM MPI ha due implementazioni di base: la versione seriale e quella parallela. Ci sono poi una serie di ottimizzazioni sulla versione parallela per migliorare le performance di esecuzione.
 
-\subsection{OpenMP}
+\subsection{MPI non bloccante}
 
-\subsection{CBLAS}
+La prima ottimizzazione \`{e} a livello MPI. La versione standard di MM MPI utilizza \textit{MPI\_Sendrecv\_replace} che ha un comportamento bloccante: questo significa che fino a che le copie non sono state effettuate la funzione non ritorna. Inoltre la funzione utilizza un solo buffer per inviare e ricevere dati e questo potrebbe rappresentare un collo di bottiglia per quanto riguarda le comunicazioni.
+
+Si \`{e} provato a superare questo problema utilizzando due chiamate non bloccanti utilizzando un doppio buffer. La sezione di codice che lo implementa \`{e} la seguente:
+
+\begin{lstlisting}
+// Shift matrix A left by one
+MPI_Isend(a_buf[i % 2], A_DBLOCK, MPI_DOUBLE, left, 1, comm_2d, &request_handles[0]);
+MPI_Irecv(a_buf[(i + 1) % 2], A_DBLOCK, MPI_DOUBLE, right, 1, comm_2d, &request_handles[1]);
+debug_printf(__func__, rank, "A: Sending data to %i, Receiving data from %i\n", left, right);
+
+// Shift matrix B up by one
+MPI_Isend(b_buf[i % 2], B_DBLOCK, MPI_DOUBLE, up, 1, comm_2d, &request_handles[2]);
+MPI_Irecv(b_buf[(i + 1) % 2], B_DBLOCK, MPI_DOUBLE, down, 1, comm_2d, &request_handles[3]);
+debug_printf(__func__, rank, "B: Sending data to %i, Receiving data from %i\n", up, down);
+
+// Let's wait all the shifts/communications to happen
+MPI_Waitall(4, request_handles, status_handles);
+\end{lstlisting}
+
+a\_buf e b\_buf sono due array cos\`{i} definti:
+
+\begin{lstlisting}
+a_buf[0] = a;
+a_buf[1] = (double *)malloc(A_DBLOCK * sizeof(double));
+
+b_buf[0] = b;
+b_buf[1] = (double *)malloc(B_DBLOCK * sizeof(double));
+\end{lstlisting}
+
+cos\`{i} da avere un doppio buffer, uno per l'invio di dati ed uno per la ricezione di dati. In questo modo le operazioni di invio e di ricezione sono completamente indipendenti l'una dall'altra.
+
+\subsection{Moltiplicazione con OpenMP}
+
+Le altre due ottimizzazioni invece sono a livello di moltipicazioni tra matrici. La prima, OpenMP va a parallelizzare l'algoritmo seriale della moltiplicazioni tra matrici. L'algoritmo seriale ha 3 cicli for annidati e si \`{e} provato a parallelizzarli in diversi modi: sul ciclo esterno, su quello centrale, su quello interno e su quello interno e centrale insieme. Si \`{e} cos\`{i} generato 4 versioni per l'implementazione bloccante e 4 per l'implementazione non bloccante.
+
+Un estratto di codice dell'ottimizzazione del ciclo esterno:
+
+\begin{lstlisting}
+    // The parallel pragma starts a parallel block
+    // By default data are shared
+    // t, k, j are private, so just i is shared
+    // the scheduler is automatic: the compiler will pick up the best one
+#pragma omp parallel for default(shared) private(t,k,j) schedule(auto)
+    for (i = 0; i < m; i++) {
+        for (j = 0; j < l; j++) {
+            t = a[i * l + j];
+            for (k = 0; k < n; k++) {
+                c[i * n + k] = c[i * n + k] + t * b[j * n + k];
+            }
+        }
+    }
+\end{lstlisting}
+
+La regola gnerale di OpenMP \`{e} che tutte le variabili in uno scope esterno sono condivise di default nella regione parallela. Tutte le variabili in sola lettura dovrebbero essere condivise mentre le variabili che scrivo dovrebber essere locali e marcate come private.
+
+\subsection{Moltiplicazione con CBLAS dgemm}
+
+L'ultima ottimizzazione \`{e} l'utilizzo di CBLAS dgemm per la moltiplicazione delle sottomatrici. Questo sostituisce completamente i 3 cicli for annidati con la seguente chiamata:
+
+\begin{lstlisting}
+cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, l, 1.0, a, l, b, n, 1.0, c, n);
+\end{lstlisting}
+
+\begin{itemize}
+  \item CblasRowMajor: indica che le matrici sono memorizzate riga x colonna
+  \item CblasNoTrans: indica che le matrici A e B non devono essere trasposte prima della moltiplicazione
+  \item m, n, l: interi che indicano le grandezze delle matrici: A[m x l], B[l x n], C[m x n]
+  \item alpha: valore reale per scalare il prodotto delle matrici A e B
+  \item a: matrice A
+  \item l: numero di colonne in A
+  \item b: matrice B
+  \item n: numero di colonne in B
+  \item alpha: valore reale per scalare la matrice C
+  \item c: matrice C
+  \item n: numero di colonne di C
+\end{itemize}
+
+Questa ottimizzazione genera due versioni di MM MPI: una per la versione bloccante ed una per la versione non bloccante
+
+
+In totale si hanno 12 versioni di MM MPI:
+\begin{itemize}
+    \item 1 versione seriale
+    \item 1 versione parallela (senza ottimizzazioni)
+    \item 8 versioni di OpenMP (4 bloccanti e 4 non bloccanti)
+    \item 2 versioni cblas (1 bloccante ed una non bloccante)
+\end{itemize}
+
+Nel prossimo capitolo verranno analizzate le performance di tutte le versioni su diversi input.
