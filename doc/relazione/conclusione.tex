@@ -1,4 +1,12 @@
 \chapter{Conclusione}
 \section{Note finali}
-\section{Futuri miglioramenti}
 
+MM MPI \`{e} lontana da essere utilizzabile in applicazioni reali.
+
+Dal punto di vista funzionale non accetta nessun stream che contenga i dati delle matrici e che non ritorna nessun prodotto.
+
+Invece di generare un binario per ogni ottimizzazione si potrebbe cambiare il design dell'applicazione in modo da passare da console il tipo di ottimizzazione che si vuole attivare.
+
+Questi sono miglioramenti strettamente funzionali che renderebbero l'applicazione utilizzabile in un contesto pi\`{u} grande.
+
+Dal punto di vista delle ottimizzazioni si potrebbe esplorare un pochino meglio OpenMP. Altro suggerimento \`{e} quello di utilizzare OpenCL e sfruttare GPU presenti su ogni nodo. Questo renderebbe estremamente veloce le moltiplicazioni locali a favore dell'intero algoritmo.

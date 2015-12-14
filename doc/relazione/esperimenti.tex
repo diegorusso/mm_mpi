@@ -1,7 +1,46 @@
 \chapter{Esperimenti}
+
+\section{Cluster ChemGrid}
+
+Tutti gli esperimenti sono stati eseguiti sul cluster ChemGrid. Il cluster \`{e} composto da 11 nodi a 32 bit con 2 processori Intel(R) Pentium(R) 4 CPU 3.06GHz. Tutti i nodi hanno 1GB di memoria tranne 4 nodi (8, 9 10, 11) che hanno 4GB. 3 nodi (3, 6, 11) sono offline e dunque non utilizzabili per sottomettere job. Dunque i nodi utilizzabili sono 8 per un totale di 16 CPU.
+
+Da ricordare che ci serve un quadrato perfetto per eseguire l'algoritmo di Cannon: 4, 9 e 16 sono i possibili candidati. 9 non \`{e} possibile utilizzarlo perch \`{e} non si hanno a disposizione sufficienti host.
+Il 4 potrebbe essere derivato da 4 host con una sola CPU oppure da 2 host con 2 CPU. Infine 16 \`{e} ottenibile solo con 8 host a 2 CPU l'uno.
+Tutti gli esperimenti verranno eseguiti con questa ultima configurazione: 8 host e 2 CPU per nodo, per un totale di 16 CPU.
+
 \section{Data file}
+
+Il file di input utilizzato per gli esperimenti ha le seguenti dimensioni:
+
+\begin{lstlisting}
+4 4 4 2
+8 8 8 2
+16 16 16 2
+32 32 32 2
+64 64 64 2
+128 128 128 2
+256 256 256 2
+512 512 512 2
+1024 1024 1024 2
+2048 2048 2048 2
+4096 4096 4096 2
+8192 8192 8192 2
+16384 16384 16384 2
+\end{lstlisting}
+
+Non ha senso andare oltre 16384 perch\`{e} i nodi iniziano ad utilizzare la memoria swap. Si consideri che una matrice quadrata con n = 16384 ha 268435456 elementi. Ogni elemento \`{e} un double che occupa 8 bytes, dunque una matrice occupa circa 2GB.
+Tutti i test sono stati fatti utilizzando 2 iterazioni.
+
 \subsection{Seriale}
+
+La versione seriale \`{e} stata eseguita su un nodo (cg11) che ha 4GB di memoria per permettere alle dimensioni pi\`{u} grandi si essere moltiplicate senza problemi. Di seguito il grafico delle sue prestazioni.
+
 \subsection{MPI senza ottimizzazioni}
-\subsection{MPI non blocking}
-\subsection{MPI OpenMP}
-\subsection{MPI CBLAS}
+\paragraph{Speedup ed efficienza}
+
+\subsection{MPI non bloccante}
+\paragraph{Speedup ed efficienza}
+
+\subsection{MPI con OpenMP}
+
+\subsection{MPI con CBLAS}
