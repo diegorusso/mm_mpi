@@ -110,7 +110,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // This is the initial alignment of A
     MPI_Cart_shift(comm_2d, 1, -coordinates[0], &source, &destination);
     debug_printf(__func__, rank,
-                 "Initial matrix alignment for A: shit of %i to %i\n",
+                 "Initial matrix alignment for A: shift of %i to %i\n",
                  -coordinates[0], destination);
 
 #if defined NONBLOCKING
