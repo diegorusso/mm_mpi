@@ -134,7 +134,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // This is the initial alignment of B
     MPI_Cart_shift(comm_2d, 0, -coordinates[1], &source, &destination);
     debug_printf(__func__, rank,
-                 "Initial matrix alignment for B: shit of %i to %i\n",
+                 "Initial matrix alignment for B: shift of %i to %i\n",
                  -coordinates[1], destination);
 
 #if defined NONBLOCKING
@@ -215,7 +215,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // Final matrix alignement for A
     MPI_Cart_shift(comm_2d, 1, +coordinates[0], &source, &destination);
     debug_printf(__func__, rank,
-                 "Final matrix alignment for A: shit of %i to %i\n",
+                 "Final matrix alignment for A: shift of %i to %i\n",
                  +coordinates[0], destination);
 
 #if defined NONBLOCKING
@@ -229,7 +229,7 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // Final matrix alignement for B
     MPI_Cart_shift(comm_2d, 0, +coordinates[1], &source, &destination);
     debug_printf(__func__, rank,
-                 "Final matrix alignment for B: shit of %i to %i\n",
+                 "Final matrix alignment for B: shift of %i to %i\n",
                  +coordinates[1], destination);
 
 #if defined NONBLOCKING
