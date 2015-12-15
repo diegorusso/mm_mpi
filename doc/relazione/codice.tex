@@ -562,7 +562,7 @@ Per quanto riguarda l'esecuzione su cluster il debug viene rediretto su stderr, 
 [function: gendat, MPI rank: 0] B[1 * 2 + 1]: 1.0 / ((0 * 2) + 1 + 1) = 0.5
 [function: mxm, MPI rank: 0] My coordinates are: 0, 0
 [function: mxm, MPI rank: 0] Left rank: 1, Up rank: 2
-[function: mxm, MPI rank: 0] Initial matrix alignment for A: shit of 0 to 0
+[function: mxm, MPI rank: 0] Initial matrix alignment for A: shift of 0 to 0
 [function: gendat, MPI rank: 1] My coordinates are: 0, 1
 [function: gendat, MPI rank: 1] BLOCKS - M: 2 L: 2 N: 2
 [function: gendat, MPI rank: 1] A[0 * 2 + 0]: 1 * 2 + 0 + 1 = 3
@@ -575,7 +575,7 @@ Per quanto riguarda l'esecuzione su cluster il debug viene rediretto su stderr, 
 [function: gendat, MPI rank: 1] B[1 * 2 + 1]: 1.0 / ((0 * 2) + 1 + 1) = 0.5
 [function: mxm, MPI rank: 1] My coordinates are: 0, 1
 [function: mxm, MPI rank: 1] Left rank: 0, Up rank: 3
-[function: mxm, MPI rank: 1] Initial matrix alignment for A: shit of 0 to 1
+[function: mxm, MPI rank: 1] Initial matrix alignment for A: shift of 0 to 1
 [function: gendat, MPI rank: 2] My coordinates are: 1, 0
 [function: gendat, MPI rank: 2] BLOCKS - M: 2 L: 2 N: 2
 [function: gendat, MPI rank: 2] A[0 * 2 + 0]: 0 * 2 + 0 + 1 = 1
@@ -588,7 +588,7 @@ Per quanto riguarda l'esecuzione su cluster il debug viene rediretto su stderr, 
 [function: gendat, MPI rank: 2] B[1 * 2 + 1]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
 [function: mxm, MPI rank: 2] My coordinates are: 1, 0
 [function: mxm, MPI rank: 2] Left rank: 3, Up rank: 0
-[function: mxm, MPI rank: 2] Initial matrix alignment for A: shit of -1 to 3
+[function: mxm, MPI rank: 2] Initial matrix alignment for A: shift of -1 to 3
 [function: gendat, MPI rank: 3] My coordinates are: 1, 1
 [function: gendat, MPI rank: 3] BLOCKS - M: 2 L: 2 N: 2
 [function: gendat, MPI rank: 3] A[0 * 2 + 0]: 1 * 2 + 0 + 1 = 3
@@ -599,19 +599,19 @@ Per quanto riguarda l'esecuzione su cluster il debug viene rediretto su stderr, 
 [function: gendat, MPI rank: 3] B[0 * 2 + 1]: 1.0 / ((1 * 2) + 0 + 1) = 0.333333
 [function: gendat, MPI rank: 3] B[1 * 2 + 0]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
 [function: gendat, MPI rank: 3] B[1 * 2 + 1]: 1.0 / ((1 * 2) + 1 + 1) = 0.25
-[function: mxm, MPI rank: 0] Initial matrix alignment for B: shit of 0 to 0
+[function: mxm, MPI rank: 0] Initial matrix alignment for B: shift of 0 to 0
 [function: mxm, MPI rank: 0] Iterate through 2 dimensions
-[function: mxm, MPI rank: 1] Initial matrix alignment for B: shit of -1 to 3
+[function: mxm, MPI rank: 1] Initial matrix alignment for B: shift of -1 to 3
 [function: mxm, MPI rank: 3] My coordinates are: 1, 1
 [function: mxm, MPI rank: 3] Left rank: 2, Up rank: 1
-[function: mxm, MPI rank: 3] Initial matrix alignment for A: shit of -1 to 2
+[function: mxm, MPI rank: 3] Initial matrix alignment for A: shift of -1 to 2
 [function: mxm, MPI rank: 1] Iterate through 2 dimensions
 [function: mxm, MPI rank: 1] A: Sending data to 0, Receiving data from 0
 [function: mxm, MPI rank: 1] B: Sending data to 3, Receiving data from 3
-[function: mxm, MPI rank: 2] Initial matrix alignment for B: shit of 0 to 2
+[function: mxm, MPI rank: 2] Initial matrix alignment for B: shift of 0 to 2
 [function: mxm, MPI rank: 2] Iterate through 2 dimensions
 [function: mxm, MPI rank: 2] A: Sending data to 3, Receiving data from 3
-[function: mxm, MPI rank: 3] Initial matrix alignment for B: shit of -1 to 1
+[function: mxm, MPI rank: 3] Initial matrix alignment for B: shift of -1 to 1
 [function: mxm, MPI rank: 3] Iterate through 2 dimensions
 [function: mxm, MPI rank: 3] A: Sending data to 2, Receiving data from 2
 [function: mxm, MPI rank: 0] A: Sending data to 1, Receiving data from 1
@@ -620,20 +620,20 @@ Per quanto riguarda l'esecuzione su cluster il debug viene rediretto su stderr, 
 [function: mxm, MPI rank: 2] B: Sending data to 0, Receiving data from 0
 [function: mxm, MPI rank: 1] A: Sending data to 0, Receiving data from 0
 [function: mxm, MPI rank: 1] B: Sending data to 3, Receiving data from 3
-[function: mxm, MPI rank: 1] Final matrix alignment for A: shit of 0 to 1
-[function: mxm, MPI rank: 1] Final matrix alignment for B: shit of 1 to 3
+[function: mxm, MPI rank: 1] Final matrix alignment for A: shift of 0 to 1
+[function: mxm, MPI rank: 1] Final matrix alignment for B: shift of 1 to 3
 [function: mxm, MPI rank: 2] A: Sending data to 3, Receiving data from 3
 [function: mxm, MPI rank: 2] B: Sending data to 0, Receiving data from 0
-[function: mxm, MPI rank: 2] Final matrix alignment for A: shit of 1 to 3
-[function: mxm, MPI rank: 2] Final matrix alignment for B: shit of 0 to 2
+[function: mxm, MPI rank: 2] Final matrix alignment for A: shift of 1 to 3
+[function: mxm, MPI rank: 2] Final matrix alignment for B: shift of 0 to 2
 [function: mxm, MPI rank: 3] B: Sending data to 1, Receiving data from 1
 [function: mxm, MPI rank: 3] A: Sending data to 2, Receiving data from 2
 [function: mxm, MPI rank: 3] B: Sending data to 1, Receiving data from 1
-[function: mxm, MPI rank: 3] Final matrix alignment for A: shit of 1 to 2
-[function: mxm, MPI rank: 3] Final matrix alignment for B: shit of 1 to 1
+[function: mxm, MPI rank: 3] Final matrix alignment for A: shift of 1 to 2
+[function: mxm, MPI rank: 3] Final matrix alignment for B: shift of 1 to 1
 [function: mxm, MPI rank: 0] B: Sending data to 2, Receiving data from 2
-[function: mxm, MPI rank: 0] Final matrix alignment for A: shit of 0 to 0
-[function: mxm, MPI rank: 0] Final matrix alignment for B: shit of 0 to 0
+[function: mxm, MPI rank: 0] Final matrix alignment for A: shift of 0 to 0
+[function: mxm, MPI rank: 0] Final matrix alignment for B: shift of 0 to 0
 \end{lstlisting}
 
 La prima cosa che si nota \`{e} la verbosit\`{e} del debug. La versione parallela contiene molte pi\`{u} informazioni rispetto alla corrispettiva parallela. Altra cosa da notare \`{e} la non linearit\`{a} delle informazioni che si hanno: MPI esegue codice su diversi nodi/macchine e non assicura ovviamente un'esecuzione perfettamente sincronizzata.

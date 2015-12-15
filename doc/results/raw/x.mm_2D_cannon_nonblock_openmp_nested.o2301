@@ -1,0 +1,181 @@
+==== Mon Dec 14 21:57:53 CET 2015 ... Job 2301.cgcw starting on cg07 ====
+==== Working directory /scratch/diego.2301.cgcw created ====
+Executing ./x.mm_2D_cannon_nonblock_openmp_nested
+Using 16 processors
+Generating data for matrix A[4 x 4]
+Generating data for matrix B[4 x 4]
+Matrix C will be [4 x 4]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+      4|      4|      4|      0.0216|  5.9375e-06|  T |
+-------------------------------------------------------
+Generating data for matrix A[8 x 8]
+Generating data for matrix B[8 x 8]
+Matrix C will be [8 x 8]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+      8|      8|      8|      0.0120|  8.5173e-05|  T |
+-------------------------------------------------------
+Generating data for matrix A[16 x 16]
+Generating data for matrix B[16 x 16]
+Matrix C will be [16 x 16]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+     16|     16|     16|      0.0073|  1.1294e-03|  T |
+-------------------------------------------------------
+Generating data for matrix A[32 x 32]
+Generating data for matrix B[32 x 32]
+Matrix C will be [32 x 32]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+     32|     32|     32|      0.0052|  1.2608e-02|  T |
+-------------------------------------------------------
+Generating data for matrix A[64 x 64]
+Generating data for matrix B[64 x 64]
+Matrix C will be [64 x 64]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+     64|     64|     64|      0.0049|  1.0682e-01|  T |
+-------------------------------------------------------
+Generating data for matrix A[128 x 128]
+Generating data for matrix B[128 x 128]
+Matrix C will be [128 x 128]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+    128|    128|    128|      0.0071|  5.8807e-01|  T |
+-------------------------------------------------------
+Generating data for matrix A[192 x 192]
+Generating data for matrix B[192 x 192]
+Matrix C will be [192 x 192]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+    192|    192|    192|      0.0125|  1.1365e+00|  T |
+-------------------------------------------------------
+Generating data for matrix A[256 x 256]
+Generating data for matrix B[256 x 256]
+Matrix C will be [256 x 256]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+    256|    256|    256|      0.0236|  1.4230e+00|  T |
+-------------------------------------------------------
+Generating data for matrix A[384 x 384]
+Generating data for matrix B[384 x 384]
+Matrix C will be [384 x 384]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+    384|    384|    384|      0.0497|  2.2801e+00|  T |
+-------------------------------------------------------
+Generating data for matrix A[512 x 512]
+Generating data for matrix B[512 x 512]
+Matrix C will be [512 x 512]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+    512|    512|    512|      0.1354|  1.9830e+00|  T |
+-------------------------------------------------------
+Generating data for matrix A[768 x 768]
+Generating data for matrix B[768 x 768]
+Matrix C will be [768 x 768]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+    768|    768|    768|      0.5371|  1.6868e+00|  T |
+-------------------------------------------------------
+Generating data for matrix A[1024 x 1024]
+Generating data for matrix B[1024 x 1024]
+Matrix C will be [1024 x 1024]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+   1024|   1024|   1024|      7.7331|  2.7770e-01|  T |
+-------------------------------------------------------
+Generating data for matrix A[1536 x 1536]
+Generating data for matrix B[1536 x 1536]
+Matrix C will be [1536 x 1536]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+   1536|   1536|   1536|     24.2223|  2.9922e-01|  T |
+-------------------------------------------------------
+Generating data for matrix A[2048 x 2048]
+Generating data for matrix B[2048 x 2048]
+Matrix C will be [2048 x 2048]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+   2048|   2048|   2048|    100.5190|  1.7091e-01|  T |
+-------------------------------------------------------
+Generating data for matrix A[3072 x 3072]
+Generating data for matrix B[3072 x 3072]
+Matrix C will be [3072 x 3072]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+   3072|   3072|   3072|    354.3523|  1.6363e-01|  T |
+-------------------------------------------------------
+Generating data for matrix A[4096 x 4096]
+Generating data for matrix B[4096 x 4096]
+Matrix C will be [4096 x 4096]
+Let's do the math (2 repetitions)
+mm: Matrix-matrix multiply test C(m,n) = A(m,l)*B(l,n)
+-------------------------------------------------------
+      Problem size     |            |            |    |
+   m   |   l   |   n   |  Time (s)  |  (Gflop/s) | OK |
+-------------------------------------------------------
+   4096|   4096|   4096|    884.2437|  1.5543e-01|  T |
+-------------------------------------------------------
+==== Mon Dec 14 22:35:38 CET 2015 ... Job 2301.cgcw ended on cg07 ====
