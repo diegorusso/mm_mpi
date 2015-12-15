@@ -1,4 +1,8 @@
 \chapter{Conclusione}
+
+Il lavoro svolto \`{e} un proof of concept di un'applicazione parallela e della sua ottimizzazione per riuscire ad avere degli speedup interessanti. Il percorso effettuato dall'implementazione seriala a quella parallela con CBLAS \`{e} stato reso interessante dai risultati degli esperimenti, a volte totalmente inaspettati e sorprendenti.
+\`{E} incredibile vedere come piccoli accorgimenti cambiano totalemente il risultato finale. Alla fine si \`{e} raggiunto l'obbiettivo di avere una implementazione parallela che funzioni meglio della sua versione seriale.
+
 \section{Note finali}
 
 MM MPI \`{e} lontana da essere utilizzabile in applicazioni reali.
@@ -10,3 +14,5 @@ Invece di generare un binario per ogni ottimizzazione si potrebbe cambiare il de
 Questi sono miglioramenti strettamente funzionali che renderebbero l'applicazione utilizzabile in un contesto pi\`{u} grande.
 
 Dal punto di vista delle ottimizzazioni si potrebbe esplorare un pochino meglio OpenMP. Altro suggerimento \`{e} quello di utilizzare OpenCL e sfruttare GPU presenti su ogni nodo. Questo renderebbe estremamente veloce le moltiplicazioni locali a favore dell'intero algoritmo.
+
+

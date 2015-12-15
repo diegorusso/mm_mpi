@@ -295,7 +295,7 @@ int MPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dest, int t
 
 La funzione implementa un invio non bloccante: questo vuol dire che ritorna anche se il messaggio non \`{e} stato inviato. \`{E} utilizzata in mxm.c nella versione non bloccante utilizzando un doppio buffer.
 
-\subsubsection{MPI\_IRecv}
+\subsubsection{MPI\_Irecv}
 \begin{lstlisting}
 int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
 \end{lstlisting}
@@ -377,20 +377,23 @@ Prima di spiegare come eseguire MM MPI, \`{e} dovereso spiegare come la generazi
 MM MPI prende in input un file di testo con il seguente formato
 
 \begin{lstlisting}
-$ cat data/4_repititions
-4 4 4 4
-8 8 8 4
-16 16 16 4
-32 32 32 4
-64 64 64 4
-128 128 128 4
-256 256 256 4
-512 512 512 4
-1024 1024 1024 4
-2048 2048 2048 4
-4096 4096 4096 4
-8192 8192 8192 4
-16384 16384 16384 4
+$ cat data/2_repititions
+4 4 4 2
+8 8 8 2
+16 16 16 2
+32 32 32 2
+64 64 64 2
+128 128 128 2
+192 192 192 2
+256 256 256 2
+384 384 384 2
+512 512 512 2
+768 768 768 2
+1024 1024 1024 2
+1536 1536 1536 2
+2048 2048 2048 2
+3072 3072 3072 2
+4096 4096 4096 2
 \end{lstlisting}
 
 Il formato del file \`{e} il seguente:
@@ -399,7 +402,7 @@ Il formato del file \`{e} il seguente:
 M   L   N   #repitizioni
 \end{lstlisting}
 
-dove la matrice A ha dimensioni MxL, la matrice B ha dimensioni LxN. In questo modo \`{e} sempre possibile effettuare la moltiplicazione. L'ultimo parametro indica il numero di volte che la moltiplicazione deve essere effettuata senza rigenerare i dati. Nell'esempio precedente vediamo che tutte le matrici generate sono quadrate di dimensione n e che la moltiplicazione verr\`{a} ripetuta 4 volte.
+dove la matrice A ha dimensioni MxL, la matrice B ha dimensioni LxN. In questo modo \`{e} sempre possibile effettuare la moltiplicazione. L'ultimo parametro indica il numero di volte che la moltiplicazione deve essere effettuata senza rigenerare i dati. Nell'esempio precedente vediamo che tutte le matrici generate sono quadrate di dimensione n e che la moltiplicazione verr\`{a} ripetuta 2 volte.
 La ripetizione \`{e} molto importante soprattutto quando si vogliono collezionare dati e si vuole attenuare eventuale rumore durante gli esperimenti.
 
 \subsubsection{Generazione delle matrici A e B}
