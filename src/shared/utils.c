@@ -41,7 +41,7 @@ void parse_arguments(int argc, char **argv, FILE **input_file){
     };
 
     if (input_file == NULL) {
-        printf("ERROR: File doesn not exist\n");
+        printf("ERROR: File does not exist\n");
         exit(1);
     };
 };

@@ -100,8 +100,8 @@ void mxm(int m, int l, int n, double *a, double *b, double *c, MPI_Comm comm) {
     // direction: coordinate dimension of shift. The direction argument is in
     //            the range [0,n-1] for an n-dimensional Cartesian mesh.
     // disp: displacement (> 0: upwards shift, < 0: downwards shift)
-    // rank_source: rank of source process
-    // rank_dest: rank of destination process
+    // rank_source: rank of source process (output)
+    // rank_dest: rank of destination process (output)
     // With these two commands I get the ranks of the left and up shifts
     MPI_Cart_shift(comm_2d, 1, -1, &right, &left);
     MPI_Cart_shift(comm_2d, 0, -1, &down, &up);
